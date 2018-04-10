@@ -1,12 +1,11 @@
 package com.example.anthony.fitcoinandroid;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -16,40 +15,29 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessOptions;
-import com.google.android.gms.fitness.data.Bucket;
-import com.google.android.gms.fitness.data.DataPoint;
-import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataSource;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.data.Subscription;
-import com.google.android.gms.fitness.request.DataReadRequest;
-import com.google.android.gms.fitness.request.DataSourcesRequest;
-import com.google.android.gms.fitness.request.OnDataPointListener;
-import com.google.android.gms.fitness.request.SensorRequest;
-import com.google.android.gms.fitness.result.DataReadResponse;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
-
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "FITNESS_API";
+    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
+    public RequestQueue queue;
+    final Handler handler = new Handler();
+    Gson gson = new Gson();
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -90,20 +78,96 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.frame_layout, TechFragment.newInstance());
         transaction.commit();
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "access fine location not granted");
+        // request queue
+        queue = Volley.newRequestQueue(this);
 
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "access fine location not yet granted");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
 
+        // initialize shared preferences - persistent data
+        sharedPreferences = this.getSharedPreferences("shared_preferences_fitcoin", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        // Check if user is already enrolled
+        if (sharedPreferences.contains("BlockchainUserId")) {
+            Log.d(TAG, "User already registered.");
+        } else {
+            try {
+                // register the user
+                registerUser();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static void getRecordingHistory() {
-        Log.d(TAG, "TEST getRecordingHistory...");
+    public void registerUser() throws JSONException {
+        JSONObject params = new JSONObject("{\"type\":\"enroll\",\"queue\":\"user_queue\",\"params\":{}}");
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Display the first 500 characters of the response string.
+                        Log.d(TAG, "Response is: " + response.toString());
+                        try {
+                            Log.d(TAG, "ResultId is: " + response.get("resultId"));
+                            getResultFromResultId("enrollment", response.get("resultId").toString(),0);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "That didn't work!");
+            }
+        });
+
+        this.queue.add(jsonObjectRequest);
     }
 
-    public void persistStartDate() {
+    public void getResultFromResultId(final String initialRequestType, final String resultId, final int attemptNumber) {
+        // Limit to 60 attempts
+        if (attemptNumber < 60) {
+            if (initialRequestType.equals("enrollment")) {
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                // Display the first 500 characters of the response string.
+                                Log.d(TAG, "Response is: " + response.toString());
+                                BackendResult backendResult = gson.fromJson(response.toString(), BackendResult.class);
+                                if (backendResult.status.equals("pending")) {
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getResultFromResultId(initialRequestType,resultId,attemptNumber + 1);
+                                        }
+                                    },3000);
+                                } else if (backendResult.status.equals("done")) {
+                                    saveUser(backendResult.result);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "That didn't work!");
+                    }
+                });
+                this.queue.add(jsonObjectRequest);
+            }
+        } else {
+            Log.d(TAG, "No results after 60 times...");
+        }
+    }
 
+    public void saveUser(String result) {
+        ResultOfEnroll resultOfEnroll = gson.fromJson(result, ResultOfEnroll.class);
+        Log.d(TAG, resultOfEnroll.result.user);
+        editor.putString("BlockchainUserId",resultOfEnroll.result.user);
+        editor.apply();
     }
 
 }

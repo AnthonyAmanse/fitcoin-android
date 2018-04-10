@@ -147,7 +147,7 @@
             android:layout_marginTop="24dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="1b2a-3c4d-5f6e-7g8h" />
+            android:text="@string/notEnrolled" />
 
     </LinearLayout>
 

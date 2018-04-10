@@ -59,6 +59,7 @@ public class UserFragment extends Fragment {
 
     public TextView userSteps;
     public TextView distanceFromSteps;
+    public TextView userId;
 
     private long userStartingDate;
 
@@ -77,12 +78,21 @@ public class UserFragment extends Fragment {
         actionBar.show();
         actionBar.setTitle("Footsteps");
 
+        // attach labels
         userSteps = rootView.findViewById(R.id.numberOfSteps);
         distanceFromSteps = rootView.findViewById(R.id.distance);
+        userId = rootView.findViewById(R.id.userIdText);
 
         // initialize shared preferences - persistent data
         SharedPreferences sharedPreferences = ((AppCompatActivity) getActivity()).getSharedPreferences("shared_preferences_fitcoin", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // check if enrolled in blockchain network
+        if (sharedPreferences.contains("BlockchainUserId")) {
+            userId.setText(sharedPreferences.getString("BlockchainUserId","Something went wrong..."));
+        } else {
+            userId.setText(R.string.notEnrolled);
+        }
 
         // Get the date now
         Calendar cal = Calendar.getInstance();
