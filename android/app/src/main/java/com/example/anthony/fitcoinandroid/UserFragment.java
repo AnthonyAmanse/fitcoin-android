@@ -56,7 +56,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class UserFragment extends Fragment {
+public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "FITNESS_API_USER_FRAG";
     private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
@@ -83,6 +83,9 @@ public class UserFragment extends Fragment {
 
     public String userIdFromStorage;
 
+    public Runnable refreshRunnable;
+    public Handler handler = new Handler();
+
     Gson gson = new Gson();
 
     public UserFragment() {
@@ -105,6 +108,8 @@ public class UserFragment extends Fragment {
         distanceFromSteps = rootView.findViewById(R.id.distance);
         userId = rootView.findViewById(R.id.userIdText);
         coinsBalance = rootView.findViewById(R.id.numberOfCoins);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         // request queue
         queue = Volley.newRequestQueue((AppCompatActivity) getActivity());
@@ -375,6 +380,14 @@ public class UserFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
+        // remove callbacks from refreshing
+        handler.removeCallbacks(refreshRunnable);
+
+        // set refreshing back to false if it was refreshing
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
         // unregister the listener
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount((AppCompatActivity) getActivity()))) {
             Log.d(TAG, "Not signed in...");
@@ -461,6 +474,11 @@ public class UserFragment extends Fragment {
                                         GetStateFinalResult getStateFinalResult = gson.fromJson(resultOfGetState.result, GetStateFinalResult.class);
                                         totalStepsConvertedToFitcoin = getStateFinalResult.stepsUsedForConversion;
                                         coinsBalance.setText(String.valueOf(getStateFinalResult.fitcoinsBalance));
+
+                                        // if it was pulled down to refresh
+                                        if (swipeRefreshLayout.isRefreshing()) {
+                                            swipeRefreshLayout.setRefreshing(false);
+                                        }
                                     } else {
                                         // if blockchain fails to process for some reason
                                         if (failedAttempts < 10) {
@@ -522,5 +540,25 @@ public class UserFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    // this handles the pull down to refresh
+    @Override
+    public void onRefresh() {
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getStateOfUser(userIdFromStorage);
+
+                // refresh google fit history
+                if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount((AppCompatActivity) getActivity()))) {
+                    Log.d(TAG, "Not signed in...");
+                } else {
+                    accessGoogleFit();
+                }
+            }
+        };
+
+        handler.postDelayed(refreshRunnable,5000);
     }
 }
