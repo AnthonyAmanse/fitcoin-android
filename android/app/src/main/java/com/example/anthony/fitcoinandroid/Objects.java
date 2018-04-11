@@ -1,5 +1,7 @@
 package com.example.anthony.fitcoinandroid;
 
+public class Objects {}
+
 class GetStateFinalResult {
     String contractIds;
     int fitcoinsBalance;

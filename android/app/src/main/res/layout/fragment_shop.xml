@@ -6,14 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ShopFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Pick an item fragment" />
-
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/contractButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -21,11 +15,18 @@
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="20dp"
         android:clickable="true"
-        android:src="@android:drawable/ic_menu_agenda" />
+        android:focusable="true"
+        android:backgroundTint="#DDD"
+        android:src="@drawable/ic_contract"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp" />
 
     <ListView
-        android:layout_width="265dp"
-        android:layout_height="350dp"
+        android:id="@+id/productList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="50dp"
+        android:clipToPadding="false"
         android:layout_centerInParent="true" />
 
 </RelativeLayout>
