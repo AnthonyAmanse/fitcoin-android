@@ -21,10 +21,10 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/productList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:padding="50dp"
         android:clipToPadding="false"
         android:layout_centerInParent="true" />

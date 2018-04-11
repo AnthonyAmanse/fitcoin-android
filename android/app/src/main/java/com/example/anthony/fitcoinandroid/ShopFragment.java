@@ -2,14 +2,12 @@ package com.example.anthony.fitcoinandroid;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -20,12 +18,10 @@ import java.util.ArrayList;
 public class ShopFragment extends Fragment {
 
     ArrayList<ShopItemModel> dataModels;
-    ListView listView;
+    RecyclerView recyclerView;
 
     private static final String TAG = "FITNESS_SHOP_FRAG";
     private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
-
-    private static CustomAdapter adapter;
 
     public ShopFragment() {
         // Required empty public constructor
@@ -40,7 +36,9 @@ public class ShopFragment extends Fragment {
 //        actionBar.show();
 //        actionBar.setTitle("Shop");
 
-        listView = rootView.findViewById(R.id.productList);
+        recyclerView = rootView.findViewById(R.id.productList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
         dataModels = new ArrayList<>();
         dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
@@ -52,9 +50,8 @@ public class ShopFragment extends Fragment {
         dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
         dataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
 
-        adapter = new CustomAdapter(dataModels, rootView.getContext());
-
-        listView.setAdapter(adapter);
+        ShopItemsAdapter adapter = new ShopItemsAdapter(rootView.getContext(),dataModels);
+        recyclerView.setAdapter(adapter);
         return rootView;
     }
 

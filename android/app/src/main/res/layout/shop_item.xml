@@ -4,7 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="0dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/shopCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
 
     <LinearLayout
         android:id="@+id/linearItem"
@@ -64,4 +70,5 @@
 
         </LinearLayout>
     </LinearLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>
