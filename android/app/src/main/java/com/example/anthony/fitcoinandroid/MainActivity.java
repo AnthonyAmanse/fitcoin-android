@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "FITNESS_API";
     private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
     public RequestQueue queue;
-    final Handler handler = new Handler();
     Gson gson = new Gson();
+    private Fragment currentTab;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment selectedFragment = null;
-
+            if (item.isChecked()) {
+                return false;
+            }
             switch (item.getItemId()) {
                 case R.id.navigation_technology:
                     selectedFragment = TechFragment.newInstance();
@@ -57,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = ShopFragment.newInstance();
                     break;
             }
-
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.frame_layout, selectedFragment);
             transaction.commit();
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         // request queue
         queue = Volley.newRequestQueue(this);
 
+        // check if location is permitted
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "access fine location not yet granted");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
@@ -94,38 +96,35 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPreferences.contains("BlockchainUserId")) {
             Log.d(TAG, "User already registered.");
         } else {
-            try {
                 // register the user
                 registerUser();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
     }
 
-    public void registerUser() throws JSONException {
-        JSONObject params = new JSONObject("{\"type\":\"enroll\",\"queue\":\"user_queue\",\"params\":{}}");
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // Display the first 500 characters of the response string.
-                        Log.d(TAG, "Response is: " + response.toString());
-                        try {
-                            Log.d(TAG, "ResultId is: " + response.get("resultId"));
-                            getResultFromResultId("enrollment", response.get("resultId").toString(),0);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+    public void registerUser() {
+        try {
+            JSONObject params = new JSONObject("{\"type\":\"enroll\",\"queue\":\"user_queue\",\"params\":{}}");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(),InitialResultFromRabbit.class);
+                            if (initialResultFromRabbit.status.equals("success")) {
+                                getResultFromResultId("enrollment", initialResultFromRabbit.resultId, 0);
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
                         }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "That didn't work!");
-            }
-        });
-
-        this.queue.add(jsonObjectRequest);
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            this.queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void getResultFromResultId(final String initialRequestType, final String resultId, final int attemptNumber) {
@@ -136,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                // Display the first 500 characters of the response string.
-                                Log.d(TAG, "Response is: " + response.toString());
                                 BackendResult backendResult = gson.fromJson(response.toString(), BackendResult.class);
                                 if (backendResult.status.equals("pending")) {
                                     new Handler().postDelayed(new Runnable() {
@@ -148,14 +145,16 @@ public class MainActivity extends AppCompatActivity {
                                     },3000);
                                 } else if (backendResult.status.equals("done")) {
                                     saveUser(backendResult.result);
+                                } else {
+                                    Log.d(TAG, "Response is: " + response.toString());
                                 }
                             }
                         }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "That didn't work!");
-                    }
-                });
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "That didn't work!");
+                            }
+                        });
                 this.queue.add(jsonObjectRequest);
             }
         } else {

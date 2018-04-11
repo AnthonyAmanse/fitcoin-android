@@ -9,6 +9,11 @@ class GetStateFinalResult {
     int totalSteps;
 }
 
+class InitialResultFromRabbit {
+    String status;
+    String resultId;
+}
+
 class BackendResult {
     String status;
     String result;
@@ -22,5 +27,11 @@ class ResultOfEnroll {
 class EnrollFinalResult {
     String user;
     String txId;
+    String error;
+}
+
+class ResultOfGetState {
+    String message;
+    String result;
     String error;
 }

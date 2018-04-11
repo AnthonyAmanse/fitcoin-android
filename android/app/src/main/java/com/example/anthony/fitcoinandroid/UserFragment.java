@@ -1,29 +1,31 @@
 package com.example.anthony.fitcoinandroid;
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
 import com.google.android.gms.fitness.data.Bucket;
@@ -39,6 +41,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -53,15 +59,31 @@ import java.util.concurrent.TimeUnit;
 public class UserFragment extends Fragment {
 
     private static final String TAG = "FITNESS_API_USER_FRAG";
+    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
     private static final int REQUEST_OAUTH_REQUEST_CODE = 0x1001;
+    private static final int FITCOINS_STEPS_CONVERSION = 100;
 
     private static OnDataPointListener stepListener;
+    private static OnDataPointListener distanceListener;
 
     public TextView userSteps;
     public TextView distanceFromSteps;
     public TextView userId;
+    public TextView coinsBalance;
+    public SwipeRefreshLayout swipeRefreshLayout;
 
     private long userStartingDate;
+    private float distanceInMeters;
+
+    public RequestQueue queue;
+
+    public Integer totalStepsConvertedToFitcoin;
+
+    public boolean sendingInProgress;
+
+    public String userIdFromStorage;
+
+    Gson gson = new Gson();
 
     public UserFragment() {
         // Required empty public constructor
@@ -82,6 +104,10 @@ public class UserFragment extends Fragment {
         userSteps = rootView.findViewById(R.id.numberOfSteps);
         distanceFromSteps = rootView.findViewById(R.id.distance);
         userId = rootView.findViewById(R.id.userIdText);
+        coinsBalance = rootView.findViewById(R.id.numberOfCoins);
+
+        // request queue
+        queue = Volley.newRequestQueue((AppCompatActivity) getActivity());
 
         // initialize shared preferences - persistent data
         SharedPreferences sharedPreferences = ((AppCompatActivity) getActivity()).getSharedPreferences("shared_preferences_fitcoin", Context.MODE_PRIVATE);
@@ -89,7 +115,11 @@ public class UserFragment extends Fragment {
 
         // check if enrolled in blockchain network
         if (sharedPreferences.contains("BlockchainUserId")) {
-            userId.setText(sharedPreferences.getString("BlockchainUserId","Something went wrong..."));
+            userIdFromStorage = sharedPreferences.getString("BlockchainUserId","Something went wrong...");
+            userId.setText(userIdFromStorage);
+            if (!userIdFromStorage.equals("Something went wrong...")) {
+                getStateOfUser(userIdFromStorage);
+            }
         } else {
             userId.setText(R.string.notEnrolled);
         }
@@ -117,7 +147,7 @@ public class UserFragment extends Fragment {
         // check if app has permissions
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount((AppCompatActivity) getActivity()), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
-                    this, // your activity
+                    this,
                     REQUEST_OAUTH_REQUEST_CODE,
                     GoogleSignIn.getLastSignedInAccount((AppCompatActivity) getActivity()),
                     fitnessOptions);
@@ -126,6 +156,16 @@ public class UserFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_OAUTH_REQUEST_CODE) {
+                Log.d(TAG, "accessing...");
+                accessGoogleFit();
+            }
+        }
     }
 
     private void accessGoogleFit() {
@@ -199,7 +239,7 @@ public class UserFragment extends Fragment {
                     @Override
                     public void onSuccess(DataReadResponse dataReadResponse) {
                         Log.d(TAG, "successfully got history");
-                        printData(dataReadResponse);
+                        getDataSetsFromBucket(dataReadResponse);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -210,17 +250,7 @@ public class UserFragment extends Fragment {
                 });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_OAUTH_REQUEST_CODE) {
-                Log.d(TAG, "accessing...");
-                accessGoogleFit();
-            }
-        }
-    }
-
-    public void printData(DataReadResponse dataReadResult) {
+    public void getDataSetsFromBucket(DataReadResponse dataReadResult) {
 
         // number of buckets would always be 1 (bucket size was set to 365 days in readRequest)
         if (dataReadResult.getBuckets().size() > 0) {
@@ -228,7 +258,7 @@ public class UserFragment extends Fragment {
             for (Bucket bucket : dataReadResult.getBuckets()) {
                 List<DataSet> dataSets = bucket.getDataSets();
                 for (DataSet dataSet : dataSets) {
-                    dumpDataSet(dataSet);
+                    parseDataSet(dataSet);
                 }
             }
         }
@@ -236,7 +266,7 @@ public class UserFragment extends Fragment {
 
 
     // Logic for reading the data sets.
-    private void dumpDataSet(DataSet dataSet) {
+    private void parseDataSet(DataSet dataSet) {
         Log.d(TAG, "Data returned for Data type: " + dataSet.getDataType().getName());
         DateFormat dateFormat = DateFormat.getTimeInstance();
 
@@ -265,7 +295,8 @@ public class UserFragment extends Fragment {
         if (dataSet.getDataType().getName().equals("com.google.step_count.delta")) {
             userSteps.setText(String.valueOf(totalStepsFromDataPoints));
         } else if (dataSet.getDataType().getName().equals("com.google.distance.delta")) {
-            distanceFromSteps.setText(String.format("%.2f", distanceTraveledFromDataPoints));
+            distanceFromSteps.setText(String.format("%.2f", distanceTraveledFromDataPoints/1000.00));
+            distanceInMeters = distanceTraveledFromDataPoints;
         }
     }
 
@@ -295,8 +326,21 @@ public class UserFragment extends Fragment {
                         int currentSteps = Integer.valueOf(userSteps.getText().toString());
                         currentSteps = currentSteps + dataPoint.getValue(field).asInt();
                         userSteps.setText(Integer.toString(currentSteps));
-                    }
 
+                        // if nothing in sending in totalStepsConvertedToFitcoin
+                        if (totalStepsConvertedToFitcoin != null && !sendingInProgress) {
+                            if (currentSteps - totalStepsConvertedToFitcoin > FITCOINS_STEPS_CONVERSION) {
+                                sendingInProgress = true;
+
+                                // send steps to blockchain
+                                sendStepsToFitchain(userIdFromStorage,currentSteps);
+
+                                // insert send steps to mongo
+
+                                // insert logic for leaderboards
+                            }
+                        }
+                    }
                 }
             }
         };
@@ -311,16 +355,15 @@ public class UserFragment extends Fragment {
                                     .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
                                     .setSamplingRate(3, TimeUnit.SECONDS)
                                     .build(), stepListener
-
                     )
                     .addOnCompleteListener(
                             new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Log.d(TAG, "Listener Registered.");
+                                        Log.d(TAG, "Step Listener Registered.");
                                     } else {
-                                        Log.e(TAG, "Listener not registered", task.getException());
+                                        Log.e(TAG, "Step Listener not registered", task.getException());
                                     }
                                 }
                             }
@@ -343,13 +386,141 @@ public class UserFragment extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull Task<Boolean> task) {
                                     if (task.isSuccessful() && task.getResult()) {
-                                        Log.d(TAG, "Listener for steps was removed.");
+                                        Log.d(TAG, "Step Listener for steps was removed.");
                                     } else {
-                                        Log.e(TAG, "Listener for steps was not removed.", task.getException());
+                                        Log.e(TAG, "Step Listener for steps was not removed.", task.getException());
                                     }
                                 }
                             }
                     );
+        }
+    }
+
+    public  void getStateOfUser(String userId) {
+        getStateOfUser(userId, 0);
+    }
+
+    public void getStateOfUser(String userId, final int failedAttempts) {
+        try {
+            JSONObject params = new JSONObject("{\"type\":\"query\",\"queue\":\"user_queue\",\"params\":{\"userId\":\"" + userId + "\", \"fcn\":\"getState\", \"args\":[" + userId + "]}}");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(), InitialResultFromRabbit.class);
+                            if (initialResultFromRabbit.status.equals("success")) {
+                                getResultFromResultId("getStateOfUser",initialResultFromRabbit.resultId,0, failedAttempts);
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getResultFromResultId(final String initialRequestType, final String resultId, final int attemptNumber) {
+        // initial failed attempt is 0
+        getResultFromResultId(initialRequestType,resultId,attemptNumber,0);
+    }
+
+    public void getResultFromResultId(final String initialRequestType, final String resultId, final int attemptNumber, final int failedAttempts) {
+        Log.d(TAG, "Attempt number: " + attemptNumber);
+        // Limit to 60 attempts
+        if (attemptNumber < 60) {
+            if (initialRequestType.equals("getStateOfUser")) {
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                BackendResult backendResult = gson.fromJson(response.toString(), BackendResult.class);
+
+                                // Check status of queued request
+                                if (backendResult.status.equals("pending")) {
+                                    // if it is still pending, check again
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getResultFromResultId(initialRequestType,resultId,attemptNumber + 1);
+                                        }
+                                    },500);
+                                } else if (backendResult.status.equals("done")) {
+                                    // when blockchain is done processing the request, read the message & result
+                                    Log.d(TAG, backendResult.result);
+                                    ResultOfGetState resultOfGetState = gson.fromJson(backendResult.result, ResultOfGetState.class);
+
+                                    if (resultOfGetState.message.equals("success")) {
+                                        // Once successful, update UI
+                                        GetStateFinalResult getStateFinalResult = gson.fromJson(resultOfGetState.result, GetStateFinalResult.class);
+                                        totalStepsConvertedToFitcoin = getStateFinalResult.stepsUsedForConversion;
+                                        coinsBalance.setText(String.valueOf(getStateFinalResult.fitcoinsBalance));
+                                    } else {
+                                        // if blockchain fails to process for some reason
+                                        if (failedAttempts < 10) {
+                                            getStateOfUser(userIdFromStorage,failedAttempts + 1);
+                                        } else {
+                                            Log.d(TAG,"10 failed attempts reached -- getStateOfUser");
+                                            Log.d(TAG, resultOfGetState.error);
+                                        }
+                                    }
+                                } else {
+                                    Log.d(TAG, "Response is: " + response.toString());
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "That didn't work!");
+                            }
+                        });
+                this.queue.add(jsonObjectRequest);
+            }
+        } else {
+            Log.d(TAG, "No results after 180 times...");
+        }
+    }
+
+    public void sendStepsToFitchain(String userId, final int numberOfStepsToSend) {
+        try {
+            JSONObject params = new JSONObject("{\"type\":\"invoke\",\"queue\":\"user_queue\",\"params\":{\"userId\":\"" + userId + "\",\"fcn\":\"generateFitcoins\",\"args\":[" + userId + ",\"" + String.valueOf(numberOfStepsToSend)+ "\"]}}");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(),InitialResultFromRabbit.class);
+                            Log.d(TAG,"Response is: --- " + response.toString());
+                            if (initialResultFromRabbit.status.equals("success")) {
+                                // toggle sendingInProgress to false after 3 seconds
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sendingInProgress = false;
+                                        getStateOfUser(userIdFromStorage);
+                                    }
+                                },5000);
+
+                                int stepsUsedForConversion = numberOfStepsToSend - (numberOfStepsToSend % 100);
+                                totalStepsConvertedToFitcoin = stepsUsedForConversion;
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            this.queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }
