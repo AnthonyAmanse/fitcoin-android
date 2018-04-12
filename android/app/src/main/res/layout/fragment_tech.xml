@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".TechFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/articlePager"
+        android:clipToPadding="false"
+        android:padding="50dp"
+        android:layout_centerInParent="true"
+        android:overScrollMode="never"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="This is the tech fragment temp" />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

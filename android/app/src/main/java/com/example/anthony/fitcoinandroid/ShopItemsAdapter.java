@@ -84,25 +84,12 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         intent.putExtra("PRODUCT_CHOSEN",(Integer) productImage.getTag());
         intent.putExtra("PRODUCT_JSON", new Gson().toJson(shopItemModel, ShopItemModel.class));
 
-//        ActivityOptions options = ActivityOptions
-//                .makeSceneTransitionAnimation((Activity) view.getContext(), (ImageView) view.findViewById(R.id.productImage),"productImage");
-//        options.update(ActivityOptions
-//                .makeSceneTransitionAnimation((Activity) view.getContext(), (TextView) view.findViewById(R.id.productName), "productName"));
-
         Pair<View, String> pair1 = Pair.create(view.findViewById(R.id.productImage),"productImage");
         Pair<View, String> pair2 = Pair.create(view.findViewById(R.id.productName),"productName");
 
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) view.getContext(), pair1, pair2);
 
         view.getContext().startActivity(intent,options.toBundle());
-
-//        TextView text = (TextView) view.findViewById(R.id.quantityQuestion);
-//
-//        if (text.getVisibility() == View.GONE) {
-//            text.setVisibility(View.VISIBLE);
-//        } else if (text.getVisibility() == View.VISIBLE) {
-//            text.setVisibility(View.GONE);
-//        }
     }
 
     public class ShopItemsViewHolder extends RecyclerView.ViewHolder {

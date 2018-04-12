@@ -33,6 +33,18 @@ public class ContractItemModel {
         return contractId;
     }
 
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
     public String getProductName() {
         return productName;
     }
@@ -43,5 +55,9 @@ public class ContractItemModel {
 
     public int getTotalPrice() {
         return totalPrice;
+    }
+
+    public String getState() {
+        return state;
     }
 }
