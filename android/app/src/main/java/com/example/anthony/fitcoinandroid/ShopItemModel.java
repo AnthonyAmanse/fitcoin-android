@@ -1,10 +1,16 @@
 package com.example.anthony.fitcoinandroid;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ShopItemModel {
 
+    @SerializedName("sellerid")
     String sellerId;
+    @SerializedName("productid")
     String productId;
+    @SerializedName("name")
     String productName;
+    @SerializedName("count")
     int quantityLeft;
     int price;
 

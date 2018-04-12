@@ -3,7 +3,7 @@ package com.example.anthony.fitcoinandroid;
 public class Objects {}
 
 class GetStateFinalResult {
-    String contractIds;
+    String[] contractIds;
     int fitcoinsBalance;
     String id;
     String memberType;
