@@ -32,7 +32,7 @@ class EnrollFinalResult {
     String error;
 }
 
-class ResultOfGetState {
+class ResultOfBackendResult {
     String message;
     String result;
     String error;

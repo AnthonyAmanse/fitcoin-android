@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -466,11 +465,11 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                 } else if (backendResult.status.equals("done")) {
                                     // when blockchain is done processing the request, read the message & result
                                     Log.d(TAG, backendResult.result);
-                                    ResultOfGetState resultOfGetState = gson.fromJson(backendResult.result, ResultOfGetState.class);
+                                    ResultOfBackendResult resultOfBackendResult = gson.fromJson(backendResult.result, ResultOfBackendResult.class);
 
-                                    if (resultOfGetState.message.equals("success")) {
+                                    if (resultOfBackendResult.message.equals("success")) {
                                         // Once successful, update UI
-                                        GetStateFinalResult getStateFinalResult = gson.fromJson(resultOfGetState.result, GetStateFinalResult.class);
+                                        GetStateFinalResult getStateFinalResult = gson.fromJson(resultOfBackendResult.result, GetStateFinalResult.class);
                                         totalStepsConvertedToFitcoin = getStateFinalResult.stepsUsedForConversion;
                                         coinsBalance.setText(String.valueOf(getStateFinalResult.fitcoinsBalance));
 
@@ -484,7 +483,7 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                             getStateOfUser(userIdFromStorage,failedAttempts + 1);
                                         } else {
                                             Log.d(TAG,"10 failed attempts reached -- getStateOfUser");
-                                            Log.d(TAG, resultOfGetState.error);
+                                            Log.d(TAG, resultOfBackendResult.error);
                                         }
                                     }
                                 } else {

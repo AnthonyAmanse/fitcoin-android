@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/quantityLayout"
     tools:context=".QuantitySelection">
 
     <TextView
@@ -94,7 +95,7 @@
         app:fontFamily="sans-serif-condensed" />
 
     <TextView
-        android:id="@+id/totalPriceTextInQuantity"
+        android:id="@+id/totalPriceInQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/totalCoinsLabel"

@@ -1,13 +1,16 @@
 package com.example.anthony.fitcoinandroid;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -167,6 +170,21 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, resultOfEnroll.result.user);
         editor.putString("BlockchainUserId",resultOfEnroll.result.user);
         editor.apply();
+
+        // send user id to registeree-api
+
+        // save the user name
+
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("Enrollment successful!");
+        alertDialog.setMessage("You have been enrolled to the blockchain network. Your User ID is:\n\n" + resultOfEnroll.result.user);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "CONFIRM",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
 }

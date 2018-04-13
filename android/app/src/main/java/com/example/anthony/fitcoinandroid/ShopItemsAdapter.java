@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,19 +55,30 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         holder.productPrice.setText(priceConcatenate);
         holder.productQuantity.setText(quantityLeftConcatenate);
 
-        if (position == 0) {
+
+        // Set the images based on the productId
+        // images are stored in app (res/drawable*)
+        // in the future, backend maybe?
+        if (shopItemModel.getProductId().equals("eye_sticker")) {
             holder.productImage.setImageResource(R.drawable.eye_sticker);
             holder.productImage.setTag(R.drawable.eye_sticker);
-        } else if (position == 1) {
+        } else if (shopItemModel.getProductId().equals("bee_sticker")) {
             holder.productImage.setImageResource(R.drawable.bee_sticker);
             holder.productImage.setTag(R.drawable.bee_sticker);
-        } else if (position == 2) {
+        } else if (shopItemModel.getProductId().equals("em_sticker")) {
             holder.productImage.setImageResource(R.drawable.em_sticker);
             holder.productImage.setTag(R.drawable.em_sticker);
         } else {
             holder.productImage.setImageResource(R.drawable.ic_footprint);
             holder.productImage.setTag(R.drawable.ic_footprint);
         }
+        setAnimation(holder);
+    }
+
+    public void setAnimation(ShopItemsViewHolder holder) {
+        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(500);
+        holder.itemView.startAnimation(animation);
     }
 
     @Override
