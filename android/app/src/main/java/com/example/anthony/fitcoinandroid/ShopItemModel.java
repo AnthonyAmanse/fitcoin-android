@@ -26,6 +26,10 @@ public class ShopItemModel {
         return productId;
     }
 
+    public String getSellerId() {
+        return sellerId;
+    }
+
     public String getProductName() {
         return productName;
     }
