@@ -109,8 +109,18 @@ public class ShopFragment extends Fragment {
         contractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(rootView.getContext(), );
-//                rootView.getContext().startActivity(intent);
+                Intent intent = new Intent(rootView.getContext(), ContractList.class);
+                ArrayList<ContractModel> contractModels = new ArrayList<>();
+
+                // sample contracts
+                contractModels.add(new ContractModel("c123456","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+                contractModels.add(new ContractModel("c123423","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+                contractModels.add(new ContractModel("c123433","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"complete"));
+                contractModels.add(new ContractModel("c123415","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+
+                // put contract models to next activity
+                intent.putExtra("CONTRACT_MODELS_JSON",new Gson().toJson(contractModels.toArray(new ContractModel[contractModels.size()]),ContractModel[].class));
+                rootView.getContext().startActivity(intent);
             }
         });
 
