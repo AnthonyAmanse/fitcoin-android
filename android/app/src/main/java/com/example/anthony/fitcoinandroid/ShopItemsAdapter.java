@@ -1,15 +1,12 @@
 package com.example.anthony.fitcoinandroid;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +22,6 @@ import java.util.ArrayList;
 public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.ShopItemsViewHolder> implements View.OnClickListener {
 
     private Context context;
-
     private ArrayList<ShopItemModel> shopItemModelList;
 
     public ShopItemsAdapter(Context context, ArrayList<ShopItemModel> shopItemModelList) {
@@ -59,13 +55,13 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         // Set the images based on the productId
         // images are stored in app (res/drawable*)
         // in the future, backend maybe?
-        if (shopItemModel.getProductId().equals("eye_sticker")) {
+        if (shopItemModel.getProductId().equals("eye_sticker") || shopItemModel.getProductId().equals("eye-sticker")) {
             holder.productImage.setImageResource(R.drawable.eye_sticker);
             holder.productImage.setTag(R.drawable.eye_sticker);
-        } else if (shopItemModel.getProductId().equals("bee_sticker")) {
+        } else if (shopItemModel.getProductId().equals("bee_sticker") || shopItemModel.getProductId().equals("bee-sticker")) {
             holder.productImage.setImageResource(R.drawable.bee_sticker);
             holder.productImage.setTag(R.drawable.bee_sticker);
-        } else if (shopItemModel.getProductId().equals("em_sticker")) {
+        } else if (shopItemModel.getProductId().equals("em_sticker") || shopItemModel.getProductId().equals("em-sticker")) {
             holder.productImage.setImageResource(R.drawable.em_sticker);
             holder.productImage.setTag(R.drawable.em_sticker);
         } else {
