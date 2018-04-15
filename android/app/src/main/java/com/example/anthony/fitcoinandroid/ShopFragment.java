@@ -2,9 +2,11 @@ package com.example.anthony.fitcoinandroid;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,7 +59,7 @@ public class ShopFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_shop, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_shop, container, false);
 //        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 //        actionBar.show();
 //        actionBar.setTitle("Shop");
@@ -101,6 +103,17 @@ public class ShopFragment extends Fragment {
 
         adapter = new ShopItemsAdapter(rootView.getContext(),dataModels);
         recyclerView.setAdapter(adapter);
+
+        // contracts floating button
+        FloatingActionButton contractButton = rootView.findViewById(R.id.contractButton);
+        contractButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Intent intent = new Intent(rootView.getContext(), );
+//                rootView.getContext().startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
