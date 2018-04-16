@@ -11,11 +11,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class QuantitySelection extends AppCompatActivity {
 
     private static final String TAG = "FITNESS_QUANTITY";
+    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
 
     ImageView productImage;
     TextView productName;
@@ -29,6 +39,9 @@ public class QuantitySelection extends AppCompatActivity {
     Snackbar maxLimitNotification;
     String userId;
     boolean isEnrolled;
+
+    ShopItemModel product;
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +82,13 @@ public class QuantitySelection extends AppCompatActivity {
 
         // convert the string to a data model and set to views
         final ShopItemModel shopItemModel = gson.fromJson(stringOfShopItemModel, ShopItemModel.class);
+        this.product = shopItemModel;
+
         productName.setText(shopItemModel.getProductName());
         productPrice.setText(String.valueOf(shopItemModel.getPrice()));
+
+        // request queue
+        queue = Volley.newRequestQueue(this);
 
         // make the max quantity and notification
         maxNumberInQuantity = 3;
@@ -112,7 +130,36 @@ public class QuantitySelection extends AppCompatActivity {
                 // send makePurchase request to blockchain here
                 Log.d(TAG, "You have user id of: " + userId);
                 Log.d(TAG, "Buy product id: " + shopItemModel.getProductId() + " and seller id: " + shopItemModel.getSellerId() + " and quantity: " + quantity.getText().toString());
+                purchaseItem();
             }
         });
+    }
+
+    public void purchaseItem() {
+        try {
+            JSONObject params = new JSONObject("{\"type\":\"invoke\",\"queue\":\"user_queue\",\"params\":{\"userId\":\"" + userId + "\", \"fcn\":\"makePurchase\", \"args\":[" + userId + "," + product.getSellerId() + "," + product.getProductId() + ",\"" + quantity.getText() + "\"]}}");
+            Log.d(TAG, params.toString());
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(), InitialResultFromRabbit.class);
+                            if (initialResultFromRabbit.status.equals("success")) {
+                                Log.d(TAG, response.toString());
+//                                getResultFromResultId("getStateOfUser",initialResultFromRabbit.resultId,0, failedAttempts);
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
