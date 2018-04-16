@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ContractList extends AppCompatActivity {
 
@@ -32,12 +34,15 @@ public class ContractList extends AppCompatActivity {
         contractModels = new ArrayList<>();
 
         ContractModel[] contractModelsReceived = gson.fromJson(contractModelsJson, ContractModel[].class);
-        contractModels.addAll(Arrays.asList(contractModelsReceived));
+
+        // reverse the contracts so that newest show at the top
+        List temp = Arrays.asList(contractModelsReceived);
+        Collections.reverse(temp);
+        contractModels.addAll(temp);
+
+        // attach adapter to view
         adapter = new ContractListAdapter(this, contractModels);
-
         recyclerView.setAdapter(adapter);
-
-        Log.d("FITNESS_CONTRACT_LIST", contractModelsJson);
 
 
     }

@@ -34,7 +34,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="D:\ghiea\Documents\GitHub\AnthonyAmanse\indoor-map-iphone-app\secretmap\images\distance@2x.png" />
+                                      <entry key="imageAsset" value="$APPLICATION_HOME_DIR$/bin/D:\ghiea\Documents\GitHub\AnthonyAmanse\indoor-map-iphone-app\secretmap\images\distance@2x.png" />
                                       <entry key="outputName" value="ic_distance" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="783938" />
@@ -46,9 +46,38 @@
                             <entry key="launcher">
                               <value>
                                 <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="backgroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="99" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="D:\ghiea\Documents\GitHub\AnthonyAmanse\indoor-map-iphone-app\secretmap\images\distance@2x.png" />
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="foregroundImage" value="$PROJECT_DIR$/app/src/main/res/drawable/coin.png" />
+                                      <entry key="outputName" value="kube_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -60,17 +89,12 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="D:\ghiea\Documents\GitHub\AnthonyAmanse\indoor-map-iphone-app\secretmap\images\distance@2x.png" />
+                                      <entry key="imageAsset" value="$APPLICATION_HOME_DIR$/bin/D:\ghiea\Documents\GitHub\AnthonyAmanse\indoor-map-iphone-app\secretmap\images\distance@2x.png" />
                                     </map>
                                   </option>
                                 </PersistentState>
                               </value>
                             </entry>
-                          </map>
-                        </option>
-                        <option name="values">
-                          <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
