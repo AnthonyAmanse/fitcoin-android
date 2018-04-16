@@ -4,6 +4,7 @@ package com.example.anthony.fitcoinandroid;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,7 +31,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -37,9 +38,11 @@ import java.util.List;
  */
 public class ShopFragment extends Fragment {
 
-    ArrayList<ShopItemModel> dataModels;
+    ArrayList<ShopItemModel> shopDataModels;
+    ArrayList<ContractModel> contractDataModels;
     RecyclerView recyclerView;
     ShopItemsAdapter adapter;
+    FloatingActionButton contractButton;
 
     private static final String TAG = "FITNESS_SHOP_FRAG";
     private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
@@ -91,35 +94,41 @@ public class ShopFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-        dataModels = new ArrayList<>();
-//        dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        dataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        dataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        dataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        dataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        dataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
+        shopDataModels = new ArrayList<>();
+//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
+//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
+//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
+//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
+//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
+//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
+//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
+//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
 
-        adapter = new ShopItemsAdapter(rootView.getContext(),dataModels);
+        adapter = new ShopItemsAdapter(rootView.getContext(), shopDataModels);
         recyclerView.setAdapter(adapter);
 
+        // initialize contract data model
+        contractDataModels = new ArrayList<>();
+
         // contracts floating button
-        FloatingActionButton contractButton = rootView.findViewById(R.id.contractButton);
+        contractButton = rootView.findViewById(R.id.contractButton);
+
+        contractButton.setVisibility(View.GONE);
         contractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(rootView.getContext(), ContractList.class);
-                ArrayList<ContractModel> contractModels = new ArrayList<>();
+
+                Log.d(TAG, contractDataModels.size() + "");
 
                 // sample contracts
-                contractModels.add(new ContractModel("c123456","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
-                contractModels.add(new ContractModel("c123423","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
-                contractModels.add(new ContractModel("c123433","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"complete"));
-                contractModels.add(new ContractModel("c123415","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+//                contractDataModels.add(new ContractModel("c123456","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+//                contractDataModels.add(new ContractModel("c123423","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
+//                contractDataModels.add(new ContractModel("c123433","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"complete"));
+//                contractDataModels.add(new ContractModel("c123415","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
 
                 // put contract models to next activity
-                intent.putExtra("CONTRACT_MODELS_JSON",new Gson().toJson(contractModels.toArray(new ContractModel[contractModels.size()]),ContractModel[].class));
+                intent.putExtra("CONTRACT_MODELS_JSON",new Gson().toJson(contractDataModels.toArray(new ContractModel[contractDataModels.size()]),ContractModel[].class));
                 rootView.getContext().startActivity(intent);
             }
         });
@@ -210,7 +219,6 @@ public class ShopFragment extends Fragment {
                         public void onResponse(JSONObject response) {
                             InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(), InitialResultFromRabbit.class);
                             if (initialResultFromRabbit.status.equals("success")) {
-                                Log.d(TAG, "Response is: -- products " + response.toString());
                                 getResultFromResultId("getProductsForSale",initialResultFromRabbit.resultId,0, failedAttempts);
                             } else {
                                 Log.d(TAG, "Response is: " + response.toString());
@@ -238,6 +246,8 @@ public class ShopFragment extends Fragment {
         // Limit to 60 attempts
         if (attemptNumber < 60) {
             if (initialRequestType.equals("getStateOfUser")) {
+
+                // GET STATE OF USER
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -286,6 +296,8 @@ public class ShopFragment extends Fragment {
                 });
                 this.queue.add(jsonObjectRequest);
             } else if (initialRequestType.equals("getProductsForSale")) {
+
+                // GET PRODUCTS FOR SALE
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -312,9 +324,66 @@ public class ShopFragment extends Fragment {
 
                                         // insert ui views here
                                         Log.d(TAG, gson.toJson(shopItemModels));
-                                        dataModels.clear();
-                                        dataModels.addAll(Arrays.asList(shopItemModels));
+                                        shopDataModels.clear();
+                                        shopDataModels.addAll(Arrays.asList(shopItemModels));
                                         adapter.notifyDataSetChanged();
+                                    } else {
+                                        // if blockchain fails to process for some reason
+                                        if (failedAttempts < 10) {
+                                            getStateOfUser(userId,failedAttempts + 1);
+                                        } else {
+                                            Log.d(TAG,"10 failed attempts reached -- getStateOfUser");
+                                            Log.d(TAG, resultOfBackendResult.error);
+                                        }
+                                    }
+                                } else {
+                                    Log.d(TAG, "Response is: " + response.toString());
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "That didn't work!");
+                    }
+                });
+                this.queue.add(jsonObjectRequest);
+            } else if (initialRequestType.equals("getAllUserContracts")) {
+
+                // GET ALL USER CONTRACTS
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                BackendResult backendResult = gson.fromJson(response.toString(), BackendResult.class);
+
+                                // Check status of queued request
+                                if (backendResult.status.equals("pending")) {
+                                    // if it is still pending, check again
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getResultFromResultId(initialRequestType,resultId,attemptNumber + 1);
+                                        }
+                                    },500);
+                                } else if (backendResult.status.equals("done")) {
+                                    // when blockchain is done processing the request, read the message & result
+                                    Log.d(TAG, "get all user contracts backend result" + backendResult.result);
+                                    ResultOfBackendResult resultOfBackendResult = gson.fromJson(backendResult.result, ResultOfBackendResult.class);
+
+                                    if (resultOfBackendResult.message.equals("success")) {
+                                        // Once successful, update UI
+                                        ContractModel[] contractModels = gson.fromJson(resultOfBackendResult.result, ContractModel[].class);
+
+                                        // insert ui views here
+                                        contractDataModels.clear();
+                                        contractDataModels.addAll(Arrays.asList(contractModels));
+
+
+                                        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+                                        animation.setDuration(500);
+                                        contractButton.setVisibility(View.VISIBLE);
+                                        contractButton.setAnimation(animation);
+
                                     } else {
                                         // if blockchain fails to process for some reason
                                         if (failedAttempts < 10) {
