@@ -59,17 +59,6 @@ public class ShopFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        if (this.isEnrolled) {
-            getStateOfUser(this.userId);
-            getAllUserContracts(this.userId);
-            getProductsForSale(this.userId);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_shop, container, false);
@@ -94,11 +83,12 @@ public class ShopFragment extends Fragment {
         // request queue
         queue = Volley.newRequestQueue((AppCompatActivity) getActivity());
 
-        if (this.isEnrolled) {
-            getStateOfUser(this.userId);
-            getAllUserContracts(this.userId);
-            getProductsForSale(this.userId);
-        }
+        // this is in onResume
+//        if (this.isEnrolled) {
+//            getStateOfUser(this.userId);
+//            getAllUserContracts(this.userId);
+//            getProductsForSale(this.userId);
+//        }
 
         recyclerView = rootView.findViewById(R.id.productList);
         recyclerView.setHasFixedSize(true);
@@ -144,6 +134,17 @@ public class ShopFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (this.isEnrolled) {
+            getStateOfUser(this.userId);
+            getAllUserContracts(this.userId);
+            getProductsForSale(this.userId);
+        }
     }
 
     public static ShopFragment newInstance() {
