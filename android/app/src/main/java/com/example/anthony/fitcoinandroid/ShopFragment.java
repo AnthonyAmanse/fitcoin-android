@@ -58,6 +58,16 @@ public class ShopFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (this.isEnrolled) {
+            getStateOfUser(this.userId);
+            getAllUserContracts(this.userId);
+            getProductsForSale(this.userId);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
