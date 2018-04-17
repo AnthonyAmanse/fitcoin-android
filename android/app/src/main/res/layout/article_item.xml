@@ -64,12 +64,13 @@
                 app:fontFamily="sans-serif" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/articleLink"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="Learn more ..."
                 android:textAllCaps="false"
+                android:autoLink="all"
                 android:textColor="#FFF"
                 android:textSize="12sp" />
         </LinearLayout>

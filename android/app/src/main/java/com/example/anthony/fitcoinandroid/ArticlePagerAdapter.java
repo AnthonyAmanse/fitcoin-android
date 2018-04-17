@@ -2,11 +2,15 @@ package com.example.anthony.fitcoinandroid;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,17 +29,31 @@ public class ArticlePagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View view = LayoutInflater.from(context).inflate(R.layout.article_item, container, false);
 
-        ArticleModel articleModel = articleModels.get(position);
+        final ArticleModel articleModel = articleModels.get(position);
 
         TextView articleTitle = view.findViewById(R.id.articleTitle);
         TextView articleSubTitle = view.findViewById(R.id.articleSubtitle);
         TextView articleSubtext = view.findViewById(R.id.articleSubtext);
         TextView articleDescription = view.findViewById(R.id.articleStatement);
+        ImageView articleImage = view.findViewById(R.id.articleImage);
+        Button articleLink = view.findViewById(R.id.articleLink);
 
         articleTitle.setText(articleModel.getTitle());
         articleSubTitle.setText(articleModel.getSubtitle());
         articleSubtext.setText(articleModel.getSubtext());
         articleDescription.setText(articleModel.getDescription());
+        if (articleModel.getBitmap() != null) {
+            articleImage.setImageBitmap(articleModel.getBitmap());
+        }
+
+        articleLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse(articleModel.getLink());
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                context.startActivity(intent);
+            }
+        });
 
         container.addView(view);
 

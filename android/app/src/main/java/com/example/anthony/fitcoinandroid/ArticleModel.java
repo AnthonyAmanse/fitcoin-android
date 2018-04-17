@@ -1,5 +1,9 @@
 package com.example.anthony.fitcoinandroid;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 public class ArticleModel {
     int page;
     String title;
@@ -17,6 +21,14 @@ public class ArticleModel {
         this.subtext = subtext;
         this.description = description;
         this.link = link;
+    }
+
+    public Bitmap getBitmap() {
+        if (imageEncoded == null || imageEncoded.equals("")) {
+            return null;
+        }
+        byte[] decodedString = Base64.decode(imageEncoded, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
     }
 
     public int getPage() {

@@ -46,10 +46,9 @@
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:text="product name"
-                        android:transitionName="productName"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:typeface="normal"
+                        android:transitionName="productName"
                         app:fontFamily="sans-serif" />
 
                     <TextView
