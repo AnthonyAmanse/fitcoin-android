@@ -387,8 +387,9 @@ public class ShopFragment extends Fragment {
 
                                         // insert ui views here
                                         contractDataModels.clear();
-                                        contractDataModels.addAll(Arrays.asList(contractModels));
-
+                                        if (contractModels != null) {
+                                            contractDataModels.addAll(Arrays.asList(contractModels));
+                                        }
 
                                         AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
                                         animation.setDuration(500);

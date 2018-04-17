@@ -94,6 +94,10 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
 //        view.getContext().startActivity(intent);
     }
 
+    public void declineContract() {
+
+    }
+
     public class ContractListViewHolder extends RecyclerView.ViewHolder {
         TextView contractIdFromList, contractStateFromList, contractDetails;
         CardView contractCard;
