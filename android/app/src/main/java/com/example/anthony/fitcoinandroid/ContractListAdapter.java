@@ -13,17 +13,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapter.ContractListViewHolder> implements View.OnClickListener {
 
     private Context context;
     private ArrayList<ContractModel> contractModels;
+    private static String TAG = "FITNESS_CONTRACT_LIST";
+    private static String BLOCKCHAIN_URL  = "http://169.61.17.171:3000";
+
+    RequestQueue queue;
 
     public ContractListAdapter(Context context, ArrayList<ContractModel> contractModels) {
         this.context = context;
         this.contractModels = contractModels;
+        this.queue = Volley.newRequestQueue(context);
     }
 
     @Override
@@ -53,9 +69,12 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
     public void onClick(View view) {
         final ContractModel contractModel = (ContractModel) view.getTag();
 
-        Button cancelButton = view.findViewById(R.id.cancelContractButton);
+        boolean isPending = contractModel.getState().equals("pending");
 
-        if (cancelButton.getVisibility() == View.GONE) {
+        final Button cancelButton = view.findViewById(R.id.cancelContractButton);
+        final TextView contractState = view.findViewById(R.id.contractStateFromList);
+
+        if (cancelButton.getVisibility() == View.GONE && isPending) {
             cancelButton.setVisibility(View.VISIBLE);
         } else {
             cancelButton.setVisibility(View.GONE);
@@ -74,7 +93,30 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Yes, remove this contract",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                declineContract(contractModel);
+
+                                // build request sent dialog
+                                AlertDialog requestSentDialog = new AlertDialog.Builder(context).create();
+                                requestSentDialog.setTitle("Request Sent!");
+                                requestSentDialog.setMessage("Your request to cancel the contract has been sent to the blockchain network. The contract's state should update at a later time.");
+                                requestSentDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Okay", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+
+                                // set cancel button visibility to gone
+                                cancelButton.setVisibility(View.GONE);
+
+                                // update contract state
+                                contractState.setText("declined");
+
+                                // dismiss dialog
                                 dialog.dismiss();
+
+                                // show request sent dialog
+                                requestSentDialog.show();
                             }
                         });
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Nevermind",
@@ -108,8 +150,32 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
 //        view.getContext().startActivity(intent);
     }
 
-    public void declineContract() {
-
+    public void declineContract(ContractModel contractModel) {
+        try {
+            JSONObject params = new JSONObject("{\"type\":\"invoke\",\"queue\":\"user_queue\",\"params\":{\"userId\":\"" + contractModel.getUserId() + "\", \"fcn\":\"transactPurchase\", \"args\":[" + contractModel.getUserId() + "," + contractModel.getContractId() + ",\"declined\"]}}");
+            Log.d(TAG, params.toString());
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            InitialResultFromRabbit initialResultFromRabbit = new Gson().fromJson(response.toString(), InitialResultFromRabbit.class);
+                            if (initialResultFromRabbit.status.equals("success")) {
+                                Log.d(TAG, response.toString());
+                                // add dialog here
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public class ContractListViewHolder extends RecyclerView.ViewHolder {

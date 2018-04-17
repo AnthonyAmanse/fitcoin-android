@@ -53,7 +53,5 @@ public class ContractList extends AppCompatActivity {
         // attach adapter to view
         adapter = new ContractListAdapter(this, contractModels);
         recyclerView.setAdapter(adapter);
-
-
     }
 }
