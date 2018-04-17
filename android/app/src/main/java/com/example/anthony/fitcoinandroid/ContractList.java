@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -36,7 +35,7 @@ public class ContractList extends AppCompatActivity {
         ContractModel[] contractModelsReceived = gson.fromJson(contractModelsJson, ContractModel[].class);
 
         // reverse the contracts so that newest show at the top
-        List temp = Arrays.asList(contractModelsReceived);
+        List<ContractModel> temp = Arrays.asList(contractModelsReceived);
         Collections.reverse(temp);
         contractModels.addAll(temp);
 
