@@ -25,9 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".QuantitySelection" />
-        <activity android:name=".ContractDetails" />
-        <activity android:name=".ContractList"></activity>
+        <activity android:name=".QuantitySelection"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ContractDetails"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ContractList"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
