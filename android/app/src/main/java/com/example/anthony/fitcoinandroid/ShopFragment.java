@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,6 +44,8 @@ public class ShopFragment extends Fragment {
     RecyclerView recyclerView;
     ShopItemsAdapter adapter;
     FloatingActionButton contractButton;
+
+    TextView fitcoinsBalance, pendingCharges;
 
     private static final String TAG = "FITNESS_SHOP_FRAG";
     private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
@@ -87,6 +90,9 @@ public class ShopFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
+        fitcoinsBalance = rootView.findViewById(R.id.fitcoinsBalance);
+        pendingCharges = rootView.findViewById(R.id.pendingCharges);
+
         shopDataModels = new ArrayList<>();
 
         adapter = new ShopItemsAdapter(rootView.getContext(), shopDataModels);
@@ -98,7 +104,7 @@ public class ShopFragment extends Fragment {
         // contracts floating button
         contractButton = rootView.findViewById(R.id.contractButton);
 
-        contractButton.setVisibility(View.GONE);
+        contractButton.setVisibility(View.INVISIBLE);
         contractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -264,6 +270,7 @@ public class ShopFragment extends Fragment {
 
                                         // insert ui views here
                                         Log.d(TAG, gson.toJson(getStateFinalResult));
+                                        fitcoinsBalance.setText(String.valueOf(getStateFinalResult.fitcoinsBalance));
 
                                     } else {
                                         // if blockchain fails to process for some reason
@@ -364,7 +371,19 @@ public class ShopFragment extends Fragment {
                                         // Once successful, update UI
                                         ContractModel[] contractModels = gson.fromJson(resultOfBackendResult.result, ContractModel[].class);
 
+                                        // ContractModel for pending contracts
+                                        ArrayList<ContractModel> pendingContracts = new ArrayList<>();
+                                        int pendingCoins = 0;
+                                        for (ContractModel contract : contractModels) {
+                                            if (contract.state.equals("pending")) {
+                                                pendingContracts.add(contract);
+                                                pendingCoins += contract.cost;
+                                            }
+                                        }
+
                                         // insert ui views here
+                                        pendingCharges.setText(String.valueOf(0 - pendingCoins));
+
                                         contractDataModels.clear();
                                         if (contractModels != null) {
                                             contractDataModels.addAll(Arrays.asList(contractModels));

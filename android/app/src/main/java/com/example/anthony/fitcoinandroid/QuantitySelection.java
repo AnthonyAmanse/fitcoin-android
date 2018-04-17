@@ -1,7 +1,9 @@
 package com.example.anthony.fitcoinandroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -44,6 +46,7 @@ public class QuantitySelection extends AppCompatActivity {
     Snackbar maxLimitNotification;
     String userId;
     boolean isEnrolled;
+    int availableBalance;
 
     ShopItemModel product;
     RequestQueue queue;
@@ -52,6 +55,7 @@ public class QuantitySelection extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.quantity_selection);
+        AppCompatActivity context = this;
 
         // get the user id
         SharedPreferences sharedPreferences = this.getSharedPreferences("shared_preferences_fitcoin", Context.MODE_PRIVATE);
@@ -81,6 +85,9 @@ public class QuantitySelection extends AppCompatActivity {
         int image = getIntent().getIntExtra("PRODUCT_CHOSEN",R.drawable.ic_footprint);
         productImage.setImageResource(image);
 
+        // get available balance
+        availableBalance = getIntent().getIntExtra("AVAILABLE_BALANCE",0);
+
         // get the data model in string of the chosen product
         String stringOfShopItemModel = getIntent().getStringExtra("PRODUCT_JSON");
         Log.d("FITNESS_QUANTITY", getIntent().getStringExtra("PRODUCT_JSON"));
@@ -96,7 +103,7 @@ public class QuantitySelection extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
 
         // make the max quantity and notification
-        maxNumberInQuantity = 3;
+        maxNumberInQuantity = 23;
         maxLimitNotification = Snackbar.make(findViewById(R.id.quantityLayout),maxNumberInQuantity + " items is the maximum quantity for this product",Snackbar.LENGTH_SHORT);
 
         // set on click listeners on button
@@ -130,7 +137,7 @@ public class QuantitySelection extends AppCompatActivity {
 
         claimButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
 
                 // disable user interaction
                 decrementQuantity.setAlpha(0.5f);
@@ -144,9 +151,22 @@ public class QuantitySelection extends AppCompatActivity {
                 claimButton.setClickable(false);
 
                 // send makePurchase request to blockchain here
-                Log.d(TAG, "You have user id    of: " + userId);
-                Log.d(TAG, "Buy product id: " + shopItemModel.getProductId() + " and seller id: " + shopItemModel.getSellerId() + " and quantity: " + quantity.getText().toString());
-                purchaseItem();
+
+                if (availableBalance >= Integer.valueOf(productPrice.getText().toString())) {
+                    purchaseItem();
+                } else {
+                    AlertDialog notEnoughBalance = new AlertDialog.Builder(view.getContext()).create();
+                    notEnoughBalance.setTitle("Purchase failed");
+                    notEnoughBalance.setMessage("You don't have enough available fitcoins. You may cancel your pending contracts if you want to change them.\n\nYour available balance is: " + availableBalance);
+                    notEnoughBalance.setButton(DialogInterface.BUTTON_POSITIVE, "Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            ((Activity) view.getContext()).finish();
+                        }
+                    });
+                    notEnoughBalance.show();
+                }
             }
         });
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -84,21 +85,34 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
 
     @Override
     public void onClick(View view) {
-        ShopItemModel shopItemModel = (ShopItemModel) view.getTag();
-        Log.d("FITNESS_ADAPTER_SHOP", "clicked on - " + shopItemModel.getProductName());
-        ImageView productImage = (ImageView) view.findViewById(R.id.productImage);
+        TextView pendingChargesView = ((Activity) context).findViewById(R.id.pendingCharges);
+        TextView fitcoinsBalanceView = ((Activity) context).findViewById(R.id.fitcoinsBalance);
 
-        Intent intent = new Intent(view.getContext(), QuantitySelection.class);
-        intent.putExtra("PRODUCT_CHOSEN",(Integer) productImage.getTag());
-        intent.putExtra("PRODUCT_JSON", new Gson().toJson(shopItemModel, ShopItemModel.class));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        if (pendingChargesView.getText().toString().equals("-") || fitcoinsBalanceView.getText().toString().equals("-")) {
+            Log.d("FITNESS_ADAPTER_SHOP", "state not yet loaded");
+        } else {
+            int pendingCharges = Integer.valueOf(pendingChargesView.getText().toString());
+            int fitcoinsBalance = Integer.valueOf(fitcoinsBalanceView.getText().toString());
 
-        Pair<View, String> pair1 = Pair.create(view.findViewById(R.id.productImage),"productImage");
-        Pair<View, String> pair2 = Pair.create(view.findViewById(R.id.productName),"productName");
+            int availableToSpend = fitcoinsBalance + pendingCharges;
 
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) view.getContext(), pair1, pair2);
+            ShopItemModel shopItemModel = (ShopItemModel) view.getTag();
+            Log.d("FITNESS_ADAPTER_SHOP", "clicked on - " + shopItemModel.getProductName());
+            ImageView productImage = (ImageView) view.findViewById(R.id.productImage);
 
-        view.getContext().startActivity(intent,options.toBundle());
+            Intent intent = new Intent(view.getContext(), QuantitySelection.class);
+            intent.putExtra("PRODUCT_CHOSEN",(Integer) productImage.getTag());
+            intent.putExtra("PRODUCT_JSON", new Gson().toJson(shopItemModel, ShopItemModel.class));
+            intent.putExtra("AVAILABLE_BALANCE",availableToSpend);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+            Pair<View, String> pair1 = Pair.create(view.findViewById(R.id.productImage),"productImage");
+            Pair<View, String> pair2 = Pair.create(view.findViewById(R.id.productName),"productName");
+
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) view.getContext(), pair1, pair2);
+
+            view.getContext().startActivity(intent,options.toBundle());
+        }
     }
 
     public class ShopItemsViewHolder extends RecyclerView.ViewHolder {
