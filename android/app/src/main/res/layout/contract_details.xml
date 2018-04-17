@@ -49,6 +49,7 @@
 
         <ImageView
             android:id="@+id/productImageInContract"
+            android:transitionName="productImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
