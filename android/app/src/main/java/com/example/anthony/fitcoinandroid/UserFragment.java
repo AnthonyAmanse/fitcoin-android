@@ -297,6 +297,14 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // update the proper labels
         if (dataSet.getDataType().getName().equals("com.google.step_count.delta")) {
             userSteps.setText(String.valueOf(totalStepsFromDataPoints));
+
+            if (totalStepsConvertedToFitcoin != null && !sendingInProgress) {
+                sendingInProgress = true;
+
+                if (totalStepsFromDataPoints - totalStepsConvertedToFitcoin > FITCOINS_STEPS_CONVERSION) {
+                    sendStepsToFitchain(userIdFromStorage,totalStepsFromDataPoints);
+                }
+            }
         } else if (dataSet.getDataType().getName().equals("com.google.distance.delta")) {
             distanceFromSteps.setText(String.format("%.2f", distanceTraveledFromDataPoints/1000.00));
             distanceInMeters = distanceTraveledFromDataPoints;
