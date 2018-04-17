@@ -37,3 +37,20 @@ class ResultOfBackendResult {
     String result;
     String error;
 }
+
+class ResultOfTransactionResult {
+    int status;
+    String message;
+    String payload;
+}
+
+class TransactionResult {
+    String txId;
+    ResultOfTransactionResult results;
+}
+
+class ResultOfMakePurchase {
+    String message;
+    TransactionResult result;
+    String error;
+}

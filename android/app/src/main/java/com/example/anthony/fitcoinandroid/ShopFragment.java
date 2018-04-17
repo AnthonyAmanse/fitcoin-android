@@ -83,26 +83,11 @@ public class ShopFragment extends Fragment {
         // request queue
         queue = Volley.newRequestQueue((AppCompatActivity) getActivity());
 
-        // this is in onResume
-//        if (this.isEnrolled) {
-//            getStateOfUser(this.userId);
-//            getAllUserContracts(this.userId);
-//            getProductsForSale(this.userId);
-//        }
-
         recyclerView = rootView.findViewById(R.id.productList);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
         shopDataModels = new ArrayList<>();
-//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
-//        shopDataModels.add(new ShopItemModel("","product-1234","The Product Name",234, 2));
-//        shopDataModels.add(new ShopItemModel("","product-1235","The Product",123, 5));
 
         adapter = new ShopItemsAdapter(rootView.getContext(), shopDataModels);
         recyclerView.setAdapter(adapter);
@@ -120,12 +105,6 @@ public class ShopFragment extends Fragment {
                 Intent intent = new Intent(rootView.getContext(), ContractList.class);
 
                 Log.d(TAG, contractDataModels.size() + "");
-
-                // sample contracts
-//                contractDataModels.add(new ContractModel("c123456","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
-//                contractDataModels.add(new ContractModel("c123423","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
-//                contractDataModels.add(new ContractModel("c123433","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"complete"));
-//                contractDataModels.add(new ContractModel("c123415","1234-1234-1234-1234","123-123-123-123","eye_sticker","Eye sticker",3,6,"pending"));
 
                 // put contract models to next activity
                 intent.putExtra("CONTRACT_MODELS_JSON",new Gson().toJson(contractDataModels.toArray(new ContractModel[contractDataModels.size()]),ContractModel[].class));

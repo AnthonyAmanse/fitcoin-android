@@ -13,6 +13,14 @@ public class ContractDetails extends AppCompatActivity {
     TextView contractId, productName, quantity, state, totalPrice, details;
     ImageView productImage;
 
+
+    // override back pressed so that no transition on shared element is performed
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,5 @@ public class ContractDetails extends AppCompatActivity {
         } else {
             details.setVisibility(View.GONE);
         }
-
     }
 }

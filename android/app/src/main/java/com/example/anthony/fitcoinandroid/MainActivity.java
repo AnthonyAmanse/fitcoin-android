@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize shared preferences - persistent data
         sharedPreferences = this.getSharedPreferences("shared_preferences_fitcoin", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
 
         // Check if user is already enrolled
         if (sharedPreferences.contains("BlockchainUserId")) {
@@ -168,6 +167,10 @@ public class MainActivity extends AppCompatActivity {
     public void saveUser(String result) {
         ResultOfEnroll resultOfEnroll = gson.fromJson(result, ResultOfEnroll.class);
         Log.d(TAG, resultOfEnroll.result.user);
+
+
+        editor = sharedPreferences.edit();
+
         editor.putString("BlockchainUserId",resultOfEnroll.result.user);
         editor.apply();
 

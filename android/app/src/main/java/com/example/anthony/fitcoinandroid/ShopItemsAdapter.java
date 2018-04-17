@@ -91,6 +91,7 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         Intent intent = new Intent(view.getContext(), QuantitySelection.class);
         intent.putExtra("PRODUCT_CHOSEN",(Integer) productImage.getTag());
         intent.putExtra("PRODUCT_JSON", new Gson().toJson(shopItemModel, ShopItemModel.class));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         Pair<View, String> pair1 = Pair.create(view.findViewById(R.id.productImage),"productImage");
         Pair<View, String> pair2 = Pair.create(view.findViewById(R.id.productName),"productName");

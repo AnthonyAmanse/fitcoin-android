@@ -1,8 +1,13 @@
 package com.example.anthony.fitcoinandroid;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -127,8 +132,19 @@ public class QuantitySelection extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                // disable user interaction
+                decrementQuantity.setAlpha(0.5f);
+                decrementQuantity.setEnabled(false);
+                decrementQuantity.setClickable(false);
+                incrementQuantity.setAlpha(0.5f);
+                incrementQuantity.setEnabled(false);
+                incrementQuantity.setClickable(false);
+                claimButton.setAlpha(0.5f);
+                claimButton.setEnabled(false);
+                claimButton.setClickable(false);
+
                 // send makePurchase request to blockchain here
-                Log.d(TAG, "You have user id of: " + userId);
+                Log.d(TAG, "You have user id    of: " + userId);
                 Log.d(TAG, "Buy product id: " + shopItemModel.getProductId() + " and seller id: " + shopItemModel.getSellerId() + " and quantity: " + quantity.getText().toString());
                 purchaseItem();
             }
@@ -146,7 +162,7 @@ public class QuantitySelection extends AppCompatActivity {
                             InitialResultFromRabbit initialResultFromRabbit = gson.fromJson(response.toString(), InitialResultFromRabbit.class);
                             if (initialResultFromRabbit.status.equals("success")) {
                                 Log.d(TAG, response.toString());
-//                                getResultFromResultId("getStateOfUser",initialResultFromRabbit.resultId,0, failedAttempts);
+                                getTransactionResult(initialResultFromRabbit.resultId,0);
                             } else {
                                 Log.d(TAG, "Response is: " + response.toString());
                             }
@@ -160,6 +176,52 @@ public class QuantitySelection extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void getTransactionResult(final String resultId, final int attemptNumber) {
+        if (attemptNumber < 60) {
+            final Activity activity = this;
+            // GET THE TRANSACTION RESULT
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BLOCKCHAIN_URL + "/api/results/" + resultId, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            BackendResult backendResult = gson.fromJson(response.toString(), BackendResult.class);
+
+                            // Check status of queued request
+                            if (backendResult.status.equals("pending")) {
+                                // if it is still pending, check again
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getTransactionResult(resultId,attemptNumber + 1);
+                                    }
+                                },500);
+                            } else if (backendResult.status.equals("done")) {
+                                // when blockchain is done processing the request, get the contract model and start activity
+                                ResultOfMakePurchase resultOfMakePurchase = gson.fromJson(backendResult.result, ResultOfMakePurchase.class);
+                                ContractModel contractModel = gson.fromJson(resultOfMakePurchase.result.results.payload, ContractModel.class);
+
+                                // start activity of contract details
+                                Intent intent = new Intent(getApplicationContext(), ContractDetails.class);
+                                intent.putExtra("CONTRACT_JSON", new Gson().toJson(contractModel, ContractModel.class));
+
+                                Pair<View, String> pair1 = Pair.create(findViewById(R.id.productImageInQuantity),"productImage");
+                                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, pair1);
+
+                                activity.startActivity(intent,options.toBundle());
+                            } else {
+                                Log.d(TAG, "Response is: " + response.toString());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            queue.add(jsonObjectRequest);
         }
     }
 }
