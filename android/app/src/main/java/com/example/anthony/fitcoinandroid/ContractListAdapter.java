@@ -3,6 +3,8 @@ package com.example.anthony.fitcoinandroid;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -66,21 +68,33 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
             public void onClick(View view) {
                 Log.d("FITNESS_CONTRACT_ITEM",contractModel.getContractId());
 
-                AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Decline this contract?");
-                alertDialog.setMessage("Do you want to nullify contract " + contractModel.getContractId() + ".\nThe items are: " + contractModel.getQuantity() + " of " + contractModel.getProductName());
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Decline",
+                alertDialog.setMessage("Do you want to cancel contract " + contractModel.getContractId() + ".\nThe items are: " + contractModel.getQuantity() + " of " + contractModel.getProductName());
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Yes, remove this contract",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Dismiss",
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Nevermind",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        Button negativeButton =  alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                        Button dismissButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+
+                        negativeButton.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));
+                        negativeButton.setTextColor(Color.RED);
+                        dismissButton.setTypeface(Typeface.create("sans-serif",Typeface.BOLD));
+                        dismissButton.setTextColor(Color.BLUE);
+                    }
+                });
                 alertDialog.show();
 
                 // This finishes the activity
