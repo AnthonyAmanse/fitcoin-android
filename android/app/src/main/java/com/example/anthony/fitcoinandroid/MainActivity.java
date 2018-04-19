@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_shop:
                     selectedFragment = ShopFragment.newInstance();
                     break;
+                case R.id.navigation_leaderboards:
+                    selectedFragment = LeaderboardsFragment.newInstance();
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.frame_layout, selectedFragment);
