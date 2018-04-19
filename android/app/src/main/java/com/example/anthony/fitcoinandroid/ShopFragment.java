@@ -371,23 +371,25 @@ public class ShopFragment extends Fragment {
                                         // Once successful, update UI
                                         ContractModel[] contractModels = gson.fromJson(resultOfBackendResult.result, ContractModel[].class);
 
+                                        // clear the contracts list
+                                        contractDataModels.clear();
+
                                         // ContractModel for pending contracts
                                         ArrayList<ContractModel> pendingContracts = new ArrayList<>();
                                         int pendingCoins = 0;
-                                        for (ContractModel contract : contractModels) {
-                                            if (contract.state.equals("pending")) {
-                                                pendingContracts.add(contract);
-                                                pendingCoins += contract.cost;
+
+                                        if (contractModels != null) {
+                                            for (ContractModel contract : contractModels) {
+                                                if (contract.state.equals("pending")) {
+                                                    pendingContracts.add(contract);
+                                                    pendingCoins += contract.cost;
+                                                }
                                             }
+                                            contractDataModels.addAll(Arrays.asList(contractModels));
                                         }
 
                                         // insert ui views here
                                         pendingCharges.setText(String.valueOf(0 - pendingCoins));
-
-                                        contractDataModels.clear();
-                                        if (contractModels != null) {
-                                            contractDataModels.addAll(Arrays.asList(contractModels));
-                                        }
 
                                         AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
                                         animation.setDuration(500);
