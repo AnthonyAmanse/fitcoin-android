@@ -34,7 +34,7 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "FITNESS_API";
-    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
+    private static final String BLOCKCHAIN_URL = "https://anthony-blockchain.us-south.containers.mybluemix.net";
     public RequestQueue queue;
     Gson gson = new Gson();
     private Fragment currentTab;
@@ -176,6 +176,8 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("BlockchainUserId",resultOfEnroll.result.user);
         editor.apply();
 
+        sendToMongo(resultOfEnroll.result.user);
+
         // send user id to registeree-api
 
         // save the user name
@@ -190,6 +192,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         alertDialog.show();
+    }
+
+    public void sendToMongo(String userId) {
+
+        editor = sharedPreferences.edit();
+
+        try {
+            JSONObject params = new JSONObject("{\"registereeId\":" + userId + ",\"steps\":0,\"calories\":0}");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/registerees/add" , params,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            // save the random name and png assigned to this user
+                            editor.putString("UserInfo", response.toString());
+                            editor.apply();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "That didn't work!");
+                }
+            });
+            queue.add(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }
