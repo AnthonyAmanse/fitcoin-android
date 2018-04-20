@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const request = require("request");
+const svg2png = require('svg2png');
 
 const Registerees = require("../models/registeree");
 
@@ -79,10 +80,11 @@ router.post("/add", function(req, res) {
   // JSON in req.body
   // Insert input validation
   var registeree = req.body
-  request.get(process.env.GRAVATAR_URL + "/gravatar/new", function(error, response, body) {
+  request.get(process.env.CLOUDFUNCTION_AVATAR, function(error, response, body) {
     let json = JSON.parse(body);
     registeree.name = json.name;
-    registeree.png = json.png;
+    var pngBuffer = svg2png.sync(new Buffer(json.image),{width:300,height:300});
+    registeree.png = pngBuffer.toString('base64');
 
     let addRegisteree = new Registerees(registeree);
 

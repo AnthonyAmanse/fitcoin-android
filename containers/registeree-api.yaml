@@ -10,7 +10,7 @@ spec:
     - port: 80
       protocol: TCP
       targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: registeree-api
 ---
@@ -29,12 +29,12 @@ spec:
         app: registeree-api
     spec:
       containers:
-        - image: anthonyamanse/registeree-api:1.0
+        - image: anthonyamanse/registeree-api:2.0
           imagePullPolicy: Always
           name: registeree-api
           env:
-            - name: GRAVATAR_URL
-              value: 'http://gravatar'
+            - name: CLOUDFUNCTION_AVATAR
+              value: 'https://service.us.apiconnect.ibmcloud.com/gws/apigateway/api/0c8f59e1d1d5405e25c88917bb965b2defd073b8ed3b5717183d253c13758c1a/api2/genereateAvatar'
             - name: MONGODB_URL
               value: ''
           volumeMounts:
