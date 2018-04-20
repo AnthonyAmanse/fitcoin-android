@@ -32,7 +32,7 @@ import org.json.JSONObject;
 public class QuantitySelection extends AppCompatActivity {
 
     private static final String TAG = "FITNESS_QUANTITY";
-    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
+    private static final String BLOCKCHAIN_URL = "https://anthony-blockchain.us-south.containers.mybluemix.net";
 
     ImageView productImage;
     TextView productName;

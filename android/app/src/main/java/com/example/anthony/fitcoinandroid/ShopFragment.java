@@ -48,7 +48,7 @@ public class ShopFragment extends Fragment {
     TextView fitcoinsBalance, pendingCharges;
 
     private static final String TAG = "FITNESS_SHOP_FRAG";
-    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
+    private static final String BLOCKCHAIN_URL = "https://anthony-blockchain.us-south.containers.mybluemix.net";
     public String userId;
     public boolean isEnrolled;
 

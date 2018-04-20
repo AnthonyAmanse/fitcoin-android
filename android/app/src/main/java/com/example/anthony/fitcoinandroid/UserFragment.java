@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "FITNESS_API_USER_FRAG";
-    private static final String BLOCKCHAIN_URL = "http://169.61.17.171:3000";
+    private static final String BLOCKCHAIN_URL = "https://anthony-blockchain.us-south.containers.mybluemix.net";
     private static final int REQUEST_OAUTH_REQUEST_CODE = 0x1001;
     private static final int FITCOINS_STEPS_CONVERSION = 100;
 

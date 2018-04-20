@@ -34,7 +34,7 @@ import java.util.Arrays;
  */
 public class TechFragment extends Fragment {
 
-    public String PAGES_URL="https://www.ibm-fitchain.com/pages";
+    public String PAGES_URL="https://anthony-blockchain.us-south.containers.mybluemix.net";
     public String TAG="FITNESS_TECH_FRAG";
 
     ArrayList<ArticleModel> articles;

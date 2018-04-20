@@ -32,7 +32,7 @@ public class ContractListAdapter extends RecyclerView.Adapter<ContractListAdapte
     private Context context;
     private ArrayList<ContractModel> contractModels;
     private static String TAG = "FITNESS_CONTRACT_LIST";
-    private static String BLOCKCHAIN_URL  = "http://169.61.17.171:3000";
+    private static String BLOCKCHAIN_URL  = "https://anthony-blockchain.us-south.containers.mybluemix.net";
 
     RequestQueue queue;
 
