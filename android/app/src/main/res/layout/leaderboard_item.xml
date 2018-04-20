@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/userPosition"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -24,7 +24,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/testImage"
+            android:id="@+id/userImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:srcCompat="@drawable/coin" />
@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:fontFamily="sans-serif-thin"
+                android:fontFamily="sans-serif"
                 android:text="12300 steps, 1km"
                 android:textSize="14sp" />
         </LinearLayout>

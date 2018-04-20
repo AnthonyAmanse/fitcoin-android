@@ -6,16 +6,22 @@ import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
 public class UserInfoModel {
+    int steps;
     String name;
     String png;
 
-    public UserInfoModel(String name, String image) {
+    public UserInfoModel(int steps, String name, String image) {
+        this.steps = steps;
         this.name = name;
         this.png = image;
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getSteps() {
+        return steps;
     }
 
     public String getPng() {
