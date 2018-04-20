@@ -28,3 +28,7 @@ spec:
         backend:
           serviceName: gravatar
           servicePort: 80
+      - path: /leaderboard
+        backend:
+          serviceName: leaderboard-api
+          servicePort: 80
