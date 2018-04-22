@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.anthony.fitcoinandroid.R;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
