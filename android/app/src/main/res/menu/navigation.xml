@@ -17,7 +17,7 @@
         android:title="@string/title_shop" />
     <item
         android:id="@+id/navigation_leaderboards"
-        android:icon="@drawable/ic_checkout_cart"
+        android:icon="@drawable/ic_bar_chart"
         android:title="@string/title_leaderboards" />
 
     <!--<item-->
