@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.anthony.fitcoinandroid.R;
 import com.google.gson.Gson;
 
 public class ContractDetails extends AppCompatActivity {

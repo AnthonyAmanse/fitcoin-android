@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('/Users/anthony/Downloads/deployment_cert.der')
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.amanse.anthony.fitcoinandroid"
@@ -12,7 +17,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
