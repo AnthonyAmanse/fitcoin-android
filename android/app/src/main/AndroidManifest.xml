@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.anthony.fitcoinandroid">
+    package="com.amanse.anthony.fitcoinandroid">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +17,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.amanse.anthony.fitcoinandroid.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,11 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".QuantitySelection"
+        <activity android:name="com.amanse.anthony.fitcoinandroid.QuantitySelection"
             android:screenOrientation="portrait" />
-        <activity android:name=".ContractDetails"
+        <activity android:name="com.amanse.anthony.fitcoinandroid.ContractDetails"
             android:screenOrientation="portrait" />
-        <activity android:name=".ContractList"
+        <activity android:name="com.amanse.anthony.fitcoinandroid.ContractList"
             android:screenOrientation="portrait" />
     </application>
 

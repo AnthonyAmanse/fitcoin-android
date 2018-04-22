@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/quantityLayout"
-    tools:context=".QuantitySelection">
+    tools:context="com.amanse.anthony.fitcoinandroid.QuantitySelection">
 
     <TextView
         android:id="@+id/howMany"

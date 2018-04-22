@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context=".ContractDetails">
+    tools:context="com.amanse.anthony.fitcoinandroid.ContractDetails">
 
     <LinearLayout
         android:layout_width="match_parent"

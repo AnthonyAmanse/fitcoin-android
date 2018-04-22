@@ -1,17 +1,18 @@
-package com.example.anthony.fitcoinandroid;
+package com.amanse.anthony.fitcoinandroid;
 
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.anthony.fitcoinandroid.R;
 
 import java.util.ArrayList;
 

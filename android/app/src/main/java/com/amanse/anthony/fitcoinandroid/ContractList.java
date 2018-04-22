@@ -1,4 +1,4 @@
-package com.example.anthony.fitcoinandroid;
+package com.amanse.anthony.fitcoinandroid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.anthony.fitcoinandroid.R;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

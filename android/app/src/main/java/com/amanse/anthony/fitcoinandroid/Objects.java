@@ -1,4 +1,4 @@
-package com.example.anthony.fitcoinandroid;
+package com.amanse.anthony.fitcoinandroid;
 
 public class Objects {}
 

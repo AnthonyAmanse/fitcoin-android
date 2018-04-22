@@ -1,4 +1,4 @@
-package com.example.anthony.fitcoinandroid;
+package com.amanse.anthony.fitcoinandroid;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -29,8 +28,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.anthony.fitcoinandroid.R;
 import com.google.gson.Gson;
 
 import org.json.JSONException;

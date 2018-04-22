@@ -1,10 +1,9 @@
-package com.example.anthony.fitcoinandroid;
+package com.amanse.anthony.fitcoinandroid;
 
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.anthony.fitcoinandroid.R;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
