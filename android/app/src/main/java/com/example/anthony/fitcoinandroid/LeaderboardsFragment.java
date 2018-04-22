@@ -47,7 +47,7 @@ public class LeaderboardsFragment extends Fragment {
     ArrayList<UserInfoModel> userInfoModels;
 
     RecyclerView recyclerView;
-    TextView userStats, userPosition;
+    TextView userStats, userPosition, status;
 
 
     LeaderboardAdapater adapter;
@@ -69,9 +69,12 @@ public class LeaderboardsFragment extends Fragment {
         final TextView userName = rootView.findViewById(R.id.userName);
         userStats = rootView.findViewById(R.id.userStats);
         userPosition = rootView.findViewById(R.id.userPosition);
+        status = rootView.findViewById(R.id.status);
 
+        userName.setText("-");
         userStats.setText("-");
         userPosition.setText("-");
+        status.setText("-");
 
         userInfoModels = new ArrayList<>();
 
@@ -143,6 +146,7 @@ public class LeaderboardsFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             userPosition.setText(String.valueOf(response.getInt("userPosition")));
+                            getStatus(response.getInt("userPosition"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -173,6 +177,27 @@ public class LeaderboardsFragment extends Fragment {
             }
         });
         queue.add(jsonArrayRequest);
+    }
+
+    public void getStatus(final int position) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BACKEND_URL + "/registerees/totalUsers" , null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int totalUsers = response.getInt("count");
+                            status.setText(String.format("You are position %d of %d", position, totalUsers));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "That didn't work!");
+            }
+        });
+        queue.add(jsonObjectRequest);
     }
 
 }

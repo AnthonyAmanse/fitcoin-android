@@ -22,6 +22,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.fitness.Fitness;
@@ -511,7 +512,7 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    public void sendStepsToFitchain(String userId, final int numberOfStepsToSend) {
+    public void sendStepsToFitchain(final String userId, final int numberOfStepsToSend) {
         try {
             JSONObject params = new JSONObject("{\"type\":\"invoke\",\"queue\":\"user_queue\",\"params\":{\"userId\":\"" + userId + "\",\"fcn\":\"generateFitcoins\",\"args\":[" + userId + ",\"" + String.valueOf(numberOfStepsToSend)+ "\"]}}");
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/api/execute", params,
@@ -528,10 +529,13 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                         sendingInProgress = false;
                                         getStateOfUser(userIdFromStorage);
                                     }
-                                },5000);
+                                },3000);
 
                                 int stepsUsedForConversion = numberOfStepsToSend - (numberOfStepsToSend % 100);
                                 totalStepsConvertedToFitcoin = stepsUsedForConversion;
+
+                                // update mongodb for leaderboard
+                                sendStepsToMongo(userId,numberOfStepsToSend);
                             } else {
                                 Log.d(TAG, "Response is: " + response.toString());
                             }
@@ -546,6 +550,23 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendStepsToMongo(String userId, int numberOfStepsToSend) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, BLOCKCHAIN_URL + "/registerees/update/" + userId + "/steps/" + String.valueOf(numberOfStepsToSend),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        Log.d(TAG, "Steps updated in mongo");
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "That didn't work!");
+            }
+        });
+        this.queue.add(stringRequest);
     }
 
     // this handles the pull down to refresh
