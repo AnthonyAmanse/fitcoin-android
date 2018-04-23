@@ -39,18 +39,36 @@ public class ContractDetails extends AppCompatActivity {
         // Set the images based on the productId
         // images are stored in app (res/drawable*)
         // in the future, backend maybe?
-        if (contractModel.getProductId().equals("eye_sticker") || contractModel.getProductId().equals("eye-sticker")) {
-            productImage.setImageResource(R.drawable.eye_sticker);
-            productImage.setTag(R.drawable.eye_sticker);
-        } else if (contractModel.getProductId().equals("bee_sticker") || contractModel.getProductId().equals("bee-sticker")) {
-            productImage.setImageResource(R.drawable.bee_sticker);
-            productImage.setTag(R.drawable.bee_sticker);
-        } else if (contractModel.getProductId().equals("em_sticker") || contractModel.getProductId().equals("em-sticker")) {
-            productImage.setImageResource(R.drawable.em_sticker);
-            productImage.setTag(R.drawable.em_sticker);
-        } else {
-            productImage.setImageResource(R.drawable.ic_footprint);
-            productImage.setTag(R.drawable.ic_footprint);
+        switch (contractModel.getProductId()) {
+            case "eye_sticker":
+            case "eye-sticker":
+                productImage.setImageResource(R.drawable.eye_sticker);
+                productImage.setTag(R.drawable.eye_sticker);
+                break;
+            case "bee_sticker":
+            case "bee-sticker":
+                productImage.setImageResource(R.drawable.bee_sticker);
+                productImage.setTag(R.drawable.bee_sticker);
+                break;
+            case "em_sticker":
+            case "em-sticker":
+                productImage.setImageResource(R.drawable.em_sticker);
+                productImage.setTag(R.drawable.em_sticker);
+                break;
+            case "think_bandana":
+            case "think-bandana":
+                productImage.setImageResource(R.drawable.think_bandana);
+                productImage.setTag(R.drawable.think_bandana);
+                break;
+            case "kubecoin_shirt":
+            case "kubecoin-shirt":
+                productImage.setImageResource(R.drawable.kubecoin_shirt);
+                productImage.setTag(R.drawable.kubecoin_shirt);
+                break;
+            default:
+                productImage.setImageResource(R.drawable.ic_footprint);
+                productImage.setTag(R.drawable.ic_footprint);
+                break;
         }
 
         contractId.setText(contractModel.getContractId());

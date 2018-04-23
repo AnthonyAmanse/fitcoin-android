@@ -56,21 +56,36 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         // Set the images based on the productId
         // images are stored in app (res/drawable*)
         // in the future, backend maybe?
-        if (shopItemModel.getProductId().equals("eye_sticker") || shopItemModel.getProductId().equals("eye-sticker")) {
-            holder.productImage.setImageResource(R.drawable.eye_sticker);
-            holder.productImage.setTag(R.drawable.eye_sticker);
-        } else if (shopItemModel.getProductId().equals("bee_sticker") || shopItemModel.getProductId().equals("bee-sticker")) {
-            holder.productImage.setImageResource(R.drawable.bee_sticker);
-            holder.productImage.setTag(R.drawable.bee_sticker);
-        } else if (shopItemModel.getProductId().equals("em_sticker") || shopItemModel.getProductId().equals("em-sticker")) {
-            holder.productImage.setImageResource(R.drawable.em_sticker);
-            holder.productImage.setTag(R.drawable.em_sticker);
-        } else if (shopItemModel.getProductId().equals("think_bandana") || shopItemModel.getProductId().equals("think-bandana")) {
-            holder.productImage.setImageResource(R.drawable.think_bandana);
-            holder.productImage.setTag(R.drawable.think_bandana);
-        } else {
-            holder.productImage.setImageResource(R.drawable.ic_footprint);
-            holder.productImage.setTag(R.drawable.ic_footprint);
+        switch (shopItemModel.getProductId()) {
+            case "eye_sticker":
+            case "eye-sticker":
+                holder.productImage.setImageResource(R.drawable.eye_sticker);
+                holder.productImage.setTag(R.drawable.eye_sticker);
+                break;
+            case "bee_sticker":
+            case "bee-sticker":
+                holder.productImage.setImageResource(R.drawable.bee_sticker);
+                holder.productImage.setTag(R.drawable.bee_sticker);
+                break;
+            case "em_sticker":
+            case "em-sticker":
+                holder.productImage.setImageResource(R.drawable.em_sticker);
+                holder.productImage.setTag(R.drawable.em_sticker);
+                break;
+            case "think_bandana":
+            case "think-bandana":
+                holder.productImage.setImageResource(R.drawable.think_bandana);
+                holder.productImage.setTag(R.drawable.think_bandana);
+                break;
+            case "kubecoin_shirt":
+            case "kubecoin-shirt":
+                holder.productImage.setImageResource(R.drawable.kubecoin_shirt);
+                holder.productImage.setTag(R.drawable.kubecoin_shirt);
+                break;
+            default:
+                holder.productImage.setImageResource(R.drawable.ic_footprint);
+                holder.productImage.setTag(R.drawable.ic_footprint);
+                break;
         }
         setAnimation(holder);
     }
@@ -117,17 +132,17 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
 
 
             // check for bee_sticker contracts
-            boolean beeStickerExists = false;
-//            if (pendingChargesView.getTag() != null && shopItemModel.getProductId().equals("bee_sticker")) {
-//                for (ContractModel contractModel: (ContractModel[]) pendingChargesView.getTag()) {
-//                    if (contractModel.getProductId().equals("bee_sticker")) {
-//                        beeStickerExists = true;
-//                    }
-//                }
-//            }
+            boolean kubecoinShirtExists = false;
+            if (pendingChargesView.getTag() != null && shopItemModel.getProductId().equals("kubecoin-shirt")) {
+                for (ContractModel contractModel: (ContractModel[]) pendingChargesView.getTag()) {
+                    if (contractModel.getProductId().equals("kubecoin-shirt")) {
+                        kubecoinShirtExists = true;
+                    }
+                }
+            }
 
-            if (beeStickerExists) {
-                Snackbar alreadyPurchasedNotification = Snackbar.make(((Activity) context).findViewById(R.id.shop_layout),"You have already claimed a Bee sticker. Please check your contracts list.",Snackbar.LENGTH_SHORT);
+            if (kubecoinShirtExists) {
+                Snackbar alreadyPurchasedNotification = Snackbar.make(((Activity) context).findViewById(R.id.shop_layout),"Users can only claim one shirt each.",Snackbar.LENGTH_SHORT);
                 alreadyPurchasedNotification.show();
             } else {
                 view.getContext().startActivity(intent,options.toBundle());
