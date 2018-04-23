@@ -104,6 +104,9 @@ public class QuantitySelection extends AppCompatActivity {
 
         // make the max quantity and notification
         maxNumberInQuantity = 5;
+        if (shopItemModel.getProductId().equals("kubecoin-shirt") || shopItemModel.getProductId().equals("kubecoin_shirt")) {
+            maxNumberInQuantity = 1;
+        }
         maxLimitNotification = Snackbar.make(findViewById(R.id.quantityLayout),maxNumberInQuantity + " items is the maximum quantity for this product",Snackbar.LENGTH_SHORT);
 
         // set on click listeners on button

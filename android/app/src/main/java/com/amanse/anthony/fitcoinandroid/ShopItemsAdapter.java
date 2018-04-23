@@ -133,9 +133,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
 
             // check for bee_sticker contracts
             boolean kubecoinShirtExists = false;
-            if (pendingChargesView.getTag() != null && shopItemModel.getProductId().equals("kubecoin-shirt")) {
+            if (pendingChargesView.getTag() != null && (shopItemModel.getProductId().equals("kubecoin-shirt") || shopItemModel.getProductId().equals("kubecoin_shirt"))) {
                 for (ContractModel contractModel: (ContractModel[]) pendingChargesView.getTag()) {
-                    if (contractModel.getProductId().equals("kubecoin-shirt")) {
+                    if (contractModel.getProductId().equals("kubecoin-shirt") || contractModel.getProductId().equals("kubecoin_shirt")) {
                         kubecoinShirtExists = true;
                     }
                 }
