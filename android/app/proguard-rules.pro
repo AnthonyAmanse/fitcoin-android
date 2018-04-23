@@ -20,10 +20,15 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-dontoptimize
+-dontpreverify
+-dontskipnonpubliclibraryclasses
+-dontobfuscate
+-forceprocessing
+-optimizationpasses 5
+
 -assumenosideeffects class android.util.Log {
   public static *** v(...);
   public static *** d(...);
-  public static *** i(...);
-  public static *** w(...);
   public static *** e(...);
 }
