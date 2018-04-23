@@ -385,6 +385,7 @@ public class ShopFragment extends Fragment {
                                                 }
                                             }
                                             contractDataModels.addAll(Arrays.asList(contractModels));
+                                            pendingCharges.setTag(contractModels);
                                         }
 
                                         // insert ui views here

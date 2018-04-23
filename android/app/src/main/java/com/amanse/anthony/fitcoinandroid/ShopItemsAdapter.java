@@ -3,6 +3,7 @@ package com.amanse.anthony.fitcoinandroid;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
@@ -64,6 +65,9 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
         } else if (shopItemModel.getProductId().equals("em_sticker") || shopItemModel.getProductId().equals("em-sticker")) {
             holder.productImage.setImageResource(R.drawable.em_sticker);
             holder.productImage.setTag(R.drawable.em_sticker);
+        } else if (shopItemModel.getProductId().equals("think_bandana") || shopItemModel.getProductId().equals("think-bandana")) {
+            holder.productImage.setImageResource(R.drawable.think_bandana);
+            holder.productImage.setTag(R.drawable.think_bandana);
         } else {
             holder.productImage.setImageResource(R.drawable.ic_footprint);
             holder.productImage.setTag(R.drawable.ic_footprint);
@@ -110,7 +114,24 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
 
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) view.getContext(), pair1, pair2);
 
-            view.getContext().startActivity(intent,options.toBundle());
+
+
+            // check for bee_sticker contracts
+            boolean beeStickerExists = false;
+//            if (pendingChargesView.getTag() != null && shopItemModel.getProductId().equals("bee_sticker")) {
+//                for (ContractModel contractModel: (ContractModel[]) pendingChargesView.getTag()) {
+//                    if (contractModel.getProductId().equals("bee_sticker")) {
+//                        beeStickerExists = true;
+//                    }
+//                }
+//            }
+
+            if (beeStickerExists) {
+                Snackbar alreadyPurchasedNotification = Snackbar.make(((Activity) context).findViewById(R.id.shop_layout),"You have already claimed a Bee sticker. Please check your contracts list.",Snackbar.LENGTH_SHORT);
+                alreadyPurchasedNotification.show();
+            } else {
+                view.getContext().startActivity(intent,options.toBundle());
+            }
         }
     }
 
