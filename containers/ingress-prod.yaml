@@ -9,9 +9,9 @@ spec:
   - hosts:
     - anthony-blockchain.us-south.containers.mybluemix.net
     secretName: anthony-blockchain
-  # backend:
-  #   serviceName: rabbitclient-api
-  #   servicePort: 3000
+  backend:
+    serviceName: mobile-assets
+    servicePort: 80
   rules:
   - host: anthony-blockchain.us-south.containers.mybluemix.net
     http:
