@@ -3,7 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            storeFile file('/Users/anthony/Downloads/deployment_cert.der')
+            storeFile file('/Users/anthony/Library/Mobile Documents/com~apple~CloudDocs/kubecoin-release')
+            keyAlias 'KubecoinRelease'
+            keyPassword 'Ro9oster3'
+            storePassword 'Ro9oster3'
         }
     }
     compileSdkVersion 27
@@ -11,14 +14,15 @@ android {
         applicationId "com.amanse.anthony.fitcoinandroid"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     productFlavors {
