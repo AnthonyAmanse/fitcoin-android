@@ -365,7 +365,7 @@ public class UserFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     .add(
                             new SensorRequest.Builder()
                                     .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
-                                    .setSamplingRate(3, TimeUnit.SECONDS)
+                                    .setSamplingRate(10, TimeUnit.SECONDS)
                                     .build(), stepListener
                     )
                     .addOnCompleteListener(
