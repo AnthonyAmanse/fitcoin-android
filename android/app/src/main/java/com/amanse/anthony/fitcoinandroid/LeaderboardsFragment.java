@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -46,7 +47,10 @@ public class LeaderboardsFragment extends Fragment {
 
     RecyclerView recyclerView;
     TextView userStats, userPosition, status;
+    Toast loadingToast;
 
+    int numberOfUsersInStanding = 10;
+    int totalNumberOfUsers = 0;
 
     LeaderboardAdapater adapter;
 
@@ -61,7 +65,7 @@ public class LeaderboardsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_leaderboards, container,false);
+        final View rootView = inflater.inflate(R.layout.fragment_leaderboards, container,false);
 
         final ImageView userImage = rootView.findViewById(R.id.userImage);
         final TextView userName = rootView.findViewById(R.id.userName);
@@ -75,6 +79,7 @@ public class LeaderboardsFragment extends Fragment {
         status.setText("-");
 
         userInfoModels = new ArrayList<>();
+        loadingToast = Toast.makeText(rootView.getContext(),"Loading...",Toast.LENGTH_SHORT);
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(rootView.getContext());
@@ -85,6 +90,20 @@ public class LeaderboardsFragment extends Fragment {
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (totalNumberOfUsers != 0 && numberOfUsersInStanding < totalNumberOfUsers) {
+                        loadingToast.show();
+                        numberOfUsersInStanding += 10;
+                        getLeaderboardTop(numberOfUsersInStanding);
+                    }
+                }
+            }
+        });
 
         adapter = new LeaderboardAdapater(rootView.getContext(), userInfoModels);
         recyclerView.setAdapter(adapter);
@@ -113,7 +132,7 @@ public class LeaderboardsFragment extends Fragment {
             }
         }
 
-        getLeaderboardTop();
+        getLeaderboardTop(numberOfUsersInStanding);
 
         return rootView;
     }
@@ -158,8 +177,8 @@ public class LeaderboardsFragment extends Fragment {
         queue.add(jsonObjectRequest);
     }
 
-    public void getLeaderboardTop() {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, BACKEND_URL + "/leaderboard/top/10" , null,
+    public void getLeaderboardTop(int number) {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, BACKEND_URL + "/leaderboard/top/" + String.valueOf(number) , null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -167,6 +186,7 @@ public class LeaderboardsFragment extends Fragment {
                         userInfoModels.clear();
                         userInfoModels.addAll(Arrays.asList(dataModels));
                         adapter.notifyDataSetChanged();
+                        loadingToast.cancel();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -185,6 +205,7 @@ public class LeaderboardsFragment extends Fragment {
                         try {
                             int totalUsers = response.getInt("count");
                             status.setText(String.format("You are position %d of %d", position, totalUsers));
+                            totalNumberOfUsers = totalUsers;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
