@@ -37,4 +37,29 @@ router.get("/position/steps/:userSteps", function(req, res) {
   });
 });
 
+router.get("/position/user/:registereeId", function(req, res) {
+  Registerees.findOne(req.params, function(err, registeree) {
+    if (err){
+      res.send(err);
+    } else if (registeree) {
+      Registerees.count({steps:{$gt:parseInt(registeree.steps)}}, function(err, position) {
+        if (err) {
+          res.send(err)
+        } else {
+          Registerees.count(function(err, count) {
+            if (err) {
+              res.send(err);
+            }
+            else {
+              res.send({"userPosition":position+1, "count":count});
+            }
+          });
+        }
+      })
+    } else {
+      res.send('Registeree not found...');
+    }
+  });
+});
+
 module.exports = router;
