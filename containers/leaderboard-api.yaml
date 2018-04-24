@@ -29,7 +29,7 @@ spec:
         app: leaderboard-api
     spec:
       containers:
-        - image: anthonyamanse/leaderboard:1.0
+        - image: anthonyamanse/leaderboard:2.0
           imagePullPolicy: Always
           name: leaderboard-api
           env:
