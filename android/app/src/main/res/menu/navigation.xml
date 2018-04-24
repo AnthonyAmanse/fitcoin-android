@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/navigation_technology"
-        android:icon="@drawable/ic_anchor"
+        android:icon="@drawable/ic_catalog"
         android:title="@string/title_technology" />
 
     <item
