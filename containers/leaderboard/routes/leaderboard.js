@@ -51,7 +51,7 @@ router.get("/position/user/:registereeId", function(req, res) {
               res.send(err);
             }
             else {
-              res.send({"userPosition":position+1, "count":count});
+              res.send({"userPosition":position+1, "count":count, "steps": registeree.steps});
             }
           });
         }
