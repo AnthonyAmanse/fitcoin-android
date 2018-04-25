@@ -6,7 +6,8 @@ let registereeSchema = mongoose.Schema({
   calories: Number,
   steps: {type: Number, required: true},
   name: String,
-  png: String
+  png: String,
+  device: String
 });
 
 module.exports = mongoose.model("Registeree", registereeSchema);

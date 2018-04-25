@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
 
         try {
-            JSONObject params = new JSONObject("{\"registereeId\":" + userId + ",\"steps\":0,\"calories\":0}");
+            JSONObject params = new JSONObject("{\"registereeId\":" + userId + ",\"steps\":0,\"calories\":0,\"device\":\"android\"}");
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BLOCKCHAIN_URL + "/registerees/add" , params,
                     new Response.Listener<JSONObject>() {
                         @Override

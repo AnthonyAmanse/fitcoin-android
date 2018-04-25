@@ -28,6 +28,24 @@ router.get("/totalUsers", function(req, res) {
   });
 });
 
+router.get("/deviceTotals", function(req, res) {
+  Registerees.count({device:"android"},function(err, androidCount) {
+    if (err) {
+      res.send(err);
+    }
+    else {
+      Registerees.count({device:"ios"},function(err, iosCount) {
+        if (err) {
+          res.send(err);
+        }
+        else {
+          res.send({"android": androidCount, "ios": iosCount});
+        }
+      });
+    }
+  });
+});
+
 router.get("/info/:registereeId", function(req, res) {
   Registerees.findOne(req.params, function(err, registeree) {
     if (err){
