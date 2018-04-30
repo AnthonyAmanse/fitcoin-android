@@ -82,6 +82,10 @@ public class ShopItemsAdapter extends RecyclerView.Adapter<ShopItemsAdapter.Shop
                 holder.productImage.setImageResource(R.drawable.kubecoin_shirt);
                 holder.productImage.setTag(R.drawable.kubecoin_shirt);
                 break;
+            case "popsocket":
+                holder.productImage.setImageResource(R.drawable.popsocket);
+                holder.productImage.setTag(R.drawable.popsocket);
+                break;
             default:
                 holder.productImage.setImageResource(R.drawable.ic_footprint);
                 holder.productImage.setTag(R.drawable.ic_footprint);
